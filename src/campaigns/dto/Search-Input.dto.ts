@@ -3,21 +3,21 @@ import { InputType, Field } from '@nestjs/graphql';
 @InputType()
 export class SearchInput {
   @Field({ nullable: true })
-  name: string;
+  name?: string;
 
   @Field({ nullable: true })
-  description: string;
+  description?: string;
 
   @Field({ nullable: true })
-  status: string;
+  status?: string;
 
   @Field({ nullable: true })
-  startDate: string;
+  startDate?: string;
 
   @Field({ nullable: true })
-  endDate: string;
+  endDate?: string;
 
   @Field({ nullable: true })
-  title: string; 
+  title?: string; 
 
 }
