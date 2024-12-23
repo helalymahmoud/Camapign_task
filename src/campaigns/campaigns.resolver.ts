@@ -13,7 +13,7 @@ export class CampaignResolver {
   adCampaignService: any; 
   constructor(
     private readonly campaignService: CampaignService,
-     readonly adService : AdService
+    private readonly adService : AdService
   ) {} 
 
   @ResolveField('ads', () => [Ad])

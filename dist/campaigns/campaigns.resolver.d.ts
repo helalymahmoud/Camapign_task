@@ -7,7 +7,7 @@ import { IDataloaders } from 'src/dataloader/dataloader.interface';
 import { SearchInput } from './dto/Search-Input.dto';
 export declare class CampaignResolver {
     private readonly campaignService;
-    readonly adService: AdService;
+    private readonly adService;
     adCampaignService: any;
     constructor(campaignService: CampaignService, adService: AdService);
     getAds(campaign: Campaign, { loaders }: {

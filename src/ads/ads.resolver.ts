@@ -10,15 +10,6 @@ export class AdResolver {
   constructor(private adService: AdService) {}
 
 
-  async getAds(
-    @Parent() campaign: Campaign, 
-    @Context() { loaders }: { loaders: { adsLoader: DataLoader<string, Ad[] | null> } }, // Inject DataLoader from context
-  ): Promise<Ad[]> {
-    const { id: campaignId } = campaign; 
-    const ads = await loaders.adsLoader.load(campaignId); 
-    return ads || []; 
-  }
-
   @Query(()=>[Ad])
   async Ads():Promise<Ad[]>{
     const Ads =await this.adService.findAll();
