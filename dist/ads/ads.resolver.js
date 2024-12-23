@@ -17,9 +17,15 @@ const graphql_1 = require("@nestjs/graphql");
 const create_ad_input_1 = require("./dto/create-ad.input");
 const ads_service_1 = require("./ads.service");
 const ads_entity_1 = require("./entities/ads.entity");
+const campaign_entity_1 = require("../campaigns/entities/campaign.entity");
 let AdResolver = class AdResolver {
     constructor(adService) {
         this.adService = adService;
+    }
+    async getAds(campaign, { loaders }) {
+        const { id: campaignId } = campaign;
+        const ads = await loaders.adsLoader.load(campaignId);
+        return ads || [];
     }
     async Ads() {
         const Ads = await this.adService.findAll();
@@ -40,6 +46,13 @@ let AdResolver = class AdResolver {
     }
 };
 exports.AdResolver = AdResolver;
+__decorate([
+    __param(0, (0, graphql_1.Parent)()),
+    __param(1, (0, graphql_1.Context)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [campaign_entity_1.Campaign, Object]),
+    __metadata("design:returntype", Promise)
+], AdResolver.prototype, "getAds", null);
 __decorate([
     (0, graphql_1.Query)(() => [ads_entity_1.Ad]),
     __metadata("design:type", Function),

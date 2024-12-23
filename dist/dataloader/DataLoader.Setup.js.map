@@ -1,0 +1,1 @@
+{"version":3,"file":"DataLoader.Setup.js","sourceRoot":"","sources":["../../src/dataloader/DataLoader.Setup.ts"],"names":[],"mappings":";;AAIA,sCAMC;AAVD,yCAAyC;AAIzC,SAAgB,aAAa,CAAC,SAAoB;IAChD,OAAO;QACL,SAAS,EAAE,IAAI,UAAU,CAAsB,KAAK,EAAE,WAAW,EAAE,EAAE;YACnE,OAAO,MAAM,SAAS,CAAC,kBAAkB,CAAC,WAAW,CAAC,CAAC;QACzD,CAAC,CAAC;KACH,CAAC;AACJ,CAAC"}
