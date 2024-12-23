@@ -11,13 +11,13 @@ export class SearchInput {
   @Field({ nullable: true })
   status?: string;
 
-  // @Field({ nullable: true })
-  // startDate?: string;
+  @Field({ nullable: true })
+  startDate?: string;
 
-  // @Field({ nullable: true })
-  // endDate?: string;
+  @Field({ nullable: true })
+  endDate?: string;
 
-  // @Field({ nullable: true })
-  // title?: string; 
+  @Field({ nullable: true })
+  title?: string; 
 
 }
