@@ -20,13 +20,4 @@ export class SearchInput {
   @Field({ nullable: true })
   title: string; 
 
-  @Field()
-  declare
-  dwwed
-  dqwdqw
-  dwqdqwd
-  dqw
-  dqwd
-  qwdqw
-  dq
 }
