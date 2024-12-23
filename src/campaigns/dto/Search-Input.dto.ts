@@ -22,4 +22,11 @@ export class SearchInput {
 
   @Field()
   declare
+  dwwed
+  dqwdqw
+  dwqdqwd
+  dqw
+  dqwd
+  qwdqw
+  dq
 }
