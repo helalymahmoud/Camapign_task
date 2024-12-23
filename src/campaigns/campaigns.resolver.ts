@@ -7,6 +7,7 @@ import { Ad } from 'src/ads/entities/ads.entity';
 import { IDataloaders } from 'src/dataloader/dataloader.interface';
 import { SearchInput } from './dto/Search-Input.dto';
 import { SearchResultUnion } from './unions';
+import { campaigns } from 'src/data';
 
 @Resolver(() => Campaign)
 export class CampaignResolver {
