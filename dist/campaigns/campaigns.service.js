@@ -87,8 +87,8 @@ let CampaignService = class CampaignService {
     }
     async findAll(pageMumber, reviewPrePage) {
         return this.campaignRepository.find({
-            skip: 4,
-            take: 11
+            skip: 0,
+            take: 3
         });
     }
     async findOne(id) {
