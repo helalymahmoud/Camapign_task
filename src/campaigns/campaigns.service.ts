@@ -94,7 +94,7 @@ async findAll(pageMumber?:number,reviewPrePage?:number):Promise<Campaign[]>{
     take:3
   });
  }
- 
+  
 async findOne(id: string): Promise<Campaign> {  
   return this.campaignRepository.findOne({where:{id}}); 
 }
