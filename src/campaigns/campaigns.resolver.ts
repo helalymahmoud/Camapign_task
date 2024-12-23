@@ -25,6 +25,7 @@ export class CampaignResolver {
     return loaders.adsLoader.load(campaignId);
   }
   
+  
   @Query(() => [Campaign], { name: 'searchCampaignsUsingFind' })
   async searchCampaignsUsingFind(@Args('searchKey', { type: () => String }) searchKey: string) {
     return await this.campaignService.searchCampaignsUsingFind(searchKey);
