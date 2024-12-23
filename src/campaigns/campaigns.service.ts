@@ -71,10 +71,10 @@ constructor(@InjectRepository(Campaign)
     const campaigns = await this.campaignService
       .createQueryBuilder('campaign')
       .where('campaign.name ILIKE :name', { name: `%${name}%` })
-      .orwhere('campaign.description ILIKE :description',{description:`%{description}%`})
-      .orwhere('campaign.status ILIKE :status',{status:`%{status}%`})
-      .orwehre('campaign.startDate ILIKE :startDate',{startDate:`%{startDate}%`})
-      .orwehre('campaign.endDate ILIKE :endDate',{endDate:`%{endDate}%`})
+      .where('campaign.description ILIKE :description',{description:`%{description}%`})
+      .where('campaign.status ILIKE :status',{status:`%{status}%`})
+      .wehre('campaign.startDate ILIKE :startDate',{startDate:`%{startDate}%`})
+      .wehre('campaign.endDate ILIKE :endDate',{endDate:`%{endDate}%`})
       .getMany();
 
       const ads = await this.adService
