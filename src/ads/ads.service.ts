@@ -20,7 +20,6 @@ export class AdService {
     const ads = await this.getAllAdsByCampaignIds(campaignId);
     const mappedResults = this._mapResultToIds(campaignId, ads);
     return mappedResults;
- 
   } 
 
   private _mapResultToIds(campaignId: readonly string[], ads: Ad[]) {

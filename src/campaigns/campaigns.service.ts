@@ -27,7 +27,7 @@ constructor(@InjectRepository(Campaign)
       startDate: Between(now, tomorrow),
       },
       relations: ['users'], 
-    });
+    }); 
   }
  
   async getCampaignsStartingNow(): Promise<Campaign[]> {
