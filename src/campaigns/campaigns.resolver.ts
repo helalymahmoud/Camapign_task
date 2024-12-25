@@ -39,10 +39,9 @@ export class CampaignResolver {
 
   @Query(() => [SearchResultUnion], { name: 'search' })
   async search(@Args('input', { type: () => SearchInput }) input: SearchInput) {
-    const campaigns=await this.campaignService.searchCampaigns(input)
       const ads = await this.adService.searchAds(input);
 
-    return [...campaigns,...ads];
+    return [,...ads];
   }
 
   
