@@ -29,7 +29,7 @@ export class AdService {
         ads.filter((ads: Ad) => ads.campaignId === id) || null,
     );  
   }
-
+ 
 async findAll():Promise<Ad[]>{
   return this.adRepository.find();
 }

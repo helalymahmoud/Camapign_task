@@ -38,10 +38,10 @@ export class CampaignResolver {
  
 
   @Query(() => [SearchResultUnion], { name: 'search' })
-  async search(@Args('input', { type: () => SearchInput }) input: SearchInput) {
+  async search(@Args('input', { type: () => SearchInput }) input: SearchInput){
       const ads = await this.adService.searchAds(input);
 
-    return [...ads];
+    return [,...ads];
   }
 
   
@@ -62,8 +62,8 @@ export class CampaignResolver {
     @Args('createCampaignInput') createCampaignInput: CreateCampaignInput): Promise<Campaign> {
     return this.campaignService.create(createCampaignInput); 
      }
-  @Mutation(()=>Campaign)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
-  async updateCampaign(
+  @Mutation(()=>Campaign)                   
+    async updateCampaign(
     @Args('id') id: string, 
     @Args('updateCampaignInput') updateCampaignInput: CreateCampaignInput,): Promise<Campaign> {
     return this.campaignService.update(id, updateCampaignInput)
