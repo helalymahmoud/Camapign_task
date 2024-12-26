@@ -5,7 +5,7 @@ import { CreateCampaignInput } from './dto/create-campaign.input';
 import { Campaign } from './entities/campaign.entity';
 import { title } from 'process';
 import { SearchInput } from './dto/Search-Input.dto';
-import { Args, InputType } from '@nestjs/graphql';
+import { Args,  } from '@nestjs/graphql';
 @Injectable()
 export class CampaignService {
   adRepository: any;
@@ -90,8 +90,8 @@ constructor(@InjectRepository(Campaign)
   
 async findAll(pageMumber?:number,reviewPrePage?:number):Promise<Campaign[]>{
   return this.campaignRepository.find({
-    skip:19 , 
-    take:1
+    skip:0 , 
+    take:0
   });
  }
   
