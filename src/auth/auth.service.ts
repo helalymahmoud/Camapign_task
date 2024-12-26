@@ -15,6 +15,15 @@ export class AuthService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,) 
     {}
 
+
+    async signUp(user: User) {
+      const token = Math.floor(1000 + Math.random() * 9000).toString();
+      await this.mailerService.sendUserConfirmation(user, token);
+    }
+
+
+
+
   async register(registerDto: RegisterDto): Promise<string> {
     const { name, email, password } = registerDto;
     const hashedPassword = await bcrypt.hash(password, 10);

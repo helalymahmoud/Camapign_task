@@ -34,6 +34,7 @@ const graphql_exception_filter_1 = require("./Exception/graphql-exception.filter
 const bullmq_1 = require("@nestjs/bullmq");
 const queue_module_1 = require("./queue/queue.module");
 const config_1 = require("@nestjs/config");
+const mailer_1 = require("@nestjs-modules/mailer");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -92,6 +93,7 @@ exports.AppModule = AppModule = __decorate([
             ticket_module_1.TicketModule,
             dataloader_module_1.DataloaderModule,
             queue_module_1.QueueModule,
+            mailer_1.MailerModule,
         ],
         providers: [app_service_1.AppService,
             {

@@ -90,8 +90,8 @@ constructor(@InjectRepository(Campaign)
   
 async findAll(pageMumber?:number,reviewPrePage?:number):Promise<Campaign[]>{
   return this.campaignRepository.find({
-    skip:0 , 
-    take:0
+    skip:18, 
+    take:3
   });
  }
   
@@ -102,7 +102,7 @@ async findOne(id: string): Promise<Campaign> {
 async create(createCampaignInput: CreateCampaignInput): Promise<Campaign> {
   const campaign = this.campaignRepository.create(createCampaignInput); 
   return this.campaignRepository.save(campaign); 
-}
+}  
 
   async update(id: string, updateCampaignInput: CreateCampaignInput): Promise<Campaign> {
     await this.campaignRepository.update(id, updateCampaignInput); 

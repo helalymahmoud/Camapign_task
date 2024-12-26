@@ -9,6 +9,7 @@ export declare class AuthService {
     userService: any;
     mailerService: any;
     constructor(jwtService: JwtService, userRepository: Repository<User>);
+    signUp(user: User): Promise<void>;
     register(registerDto: RegisterDto): Promise<string>;
     login(loginDto: LoginDto): Promise<string>;
     HandleForgetPassword(email: string): Promise<string>;

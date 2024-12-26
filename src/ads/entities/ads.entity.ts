@@ -17,19 +17,19 @@ export class Ad {
   @Column()
   campaigned: string; 
 
-  @Field()
+  @Field(()=>String)
   @Column()
   title: string;
 
-  @Field()
+  @Field(()=>String)
   @Column()
   content: string;
 
-  @Field()
+  @Field(()=>String)
   @Column()
   type: string;
 
-  @Field()
+  @Field(()=>String)
   @Column() 
   status: string;
 

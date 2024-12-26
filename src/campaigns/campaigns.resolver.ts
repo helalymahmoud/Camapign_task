@@ -35,12 +35,11 @@ export class CampaignResolver {
   async searchCampaignsUsingQueryBuilder(@Args('searchKey', { type: () => String }) searchKey: string) {
     return await this.campaignService.searchCampaigns(searchKey);
   }
- 
+  
 
   @Query(() => [SearchResultUnion], { name: 'search' })
   async search(@Args('input', { type: () => SearchInput }) input: SearchInput){
-      const campaigns = await this.campaignService
-      const ads = await this.adService.searchAds(input);
+    const ads = await this.adService.searchAds(input);
 
     return [,...ads];
   }

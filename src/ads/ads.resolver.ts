@@ -2,8 +2,6 @@ import { Resolver, Query, Mutation, Args, Parent, Context } from '@nestjs/graphq
 import { CreateAdInput } from './dto/create-ad.input';
 import { AdService } from './ads.service';
 import { Ad } from './entities/ads.entity';
-import DataLoader from 'dataloader';
-import { Campaign } from 'src/campaigns/entities/campaign.entity';
 
 @Resolver(() => Ad)
 export class AdResolver {

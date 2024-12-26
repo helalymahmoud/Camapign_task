@@ -12,7 +12,7 @@ export class Campaign {
   id: string;
 
   @Field(()=>String)
-  @Column()
+  @Column() 
   name: string;
 
   @Field(()=>String)

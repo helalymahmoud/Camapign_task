@@ -7,9 +7,11 @@ import { JwtStrategy } from './jwt.strategy';
 import { RolesGuard } from './roles.guard';
 import { User } from 'src/users/entities/user.entity';
 import { ConfigModule } from '@nestjs/config';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
+    MailerModule,
     ConfigModule,
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
@@ -17,7 +19,15 @@ import { ConfigModule } from '@nestjs/config';
       signOptions: { expiresIn: '1d' },
     }),
   ],
-  providers: [AuthService, AuthResolver, JwtStrategy, RolesGuard],
+  providers: [
+    AuthService,
+     AuthResolver, 
+     JwtStrategy,
+      RolesGuard],
   exports: [AuthService],
 })
 export class AuthModule {}
+
+
+
+

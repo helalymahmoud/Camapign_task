@@ -25,6 +25,7 @@ import { GraphQLExceptisonFilter } from './Exception/graphql-exception.filter';
 import { BullModule } from '@nestjs/bullmq';
 import { QueueModule } from './queue/queue.module';
 import { ConfigModule } from '@nestjs/config';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -89,6 +90,7 @@ import { ConfigModule } from '@nestjs/config';
        TicketModule,
        DataloaderModule,
        QueueModule,
+       MailerModule,
   ],
   providers:[AppService, 
      {

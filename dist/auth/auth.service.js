@@ -24,6 +24,10 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
     }
+    async signUp(user) {
+        const token = Math.floor(1000 + Math.random() * 9000).toString();
+        await this.mailerService.sendUserConfirmation(user, token);
+    }
     async register(registerDto) {
         const { name, email, password } = registerDto;
         const hashedPassword = await bcrypt.hash(password, 10);
