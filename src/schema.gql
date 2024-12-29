@@ -91,6 +91,8 @@ type Mutation {
   SendNotification(FcmToken: String!, Title: String!, Body: String!): String!
   Register(data: RegisterDto!): String!
   Login(data: LoginDto!): String!
+  sendVerificationEmail(email: String!): Boolean!
+  verifyEmail(token: String!): Boolean!
   forgetPassword(email: String!): String!
   resetPassword(token: String!, newPassword: String!): String!
   createPartner(createPartnerInput: CreatePartnerInput!): Partner!

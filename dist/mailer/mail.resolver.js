@@ -12,35 +12,35 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserResolver = void 0;
+exports.EmailResolver = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const mail_service_1 = require("./mail.service");
-let UserResolver = class UserResolver {
-    constructor(mailService) {
-        this.mailService = mailService;
+let EmailResolver = class EmailResolver {
+    constructor(mailservice) {
+        this.mailservice = mailservice;
     }
-    async sendWelcomeEmail(email, name) {
+    async sendVerificationEmail(email, token) {
         try {
-            await this.mailService.sendWelcomeEmail(email, name);
+            await this.mailservice.sendVerificationEmail(email, token);
             return true;
         }
         catch (error) {
-            console.error(error);
+            console.error('Failed to send email:', error);
             return false;
         }
     }
 };
-exports.UserResolver = UserResolver;
+exports.EmailResolver = EmailResolver;
 __decorate([
     (0, graphql_1.Mutation)(() => Boolean),
     __param(0, (0, graphql_1.Args)('email')),
-    __param(1, (0, graphql_1.Args)('name')),
+    __param(1, (0, graphql_1.Args)('token')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
-], UserResolver.prototype, "sendWelcomeEmail", null);
-exports.UserResolver = UserResolver = __decorate([
+], EmailResolver.prototype, "sendVerificationEmail", null);
+exports.EmailResolver = EmailResolver = __decorate([
     (0, graphql_1.Resolver)(),
     __metadata("design:paramtypes", [mail_service_1.MailService])
-], UserResolver);
+], EmailResolver);
 //# sourceMappingURL=mail.resolver.js.map

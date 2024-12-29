@@ -1,6 +1,6 @@
 import { MailService } from './mail.service';
-export declare class UserResolver {
-    private readonly mailService;
-    constructor(mailService: MailService);
-    sendWelcomeEmail(email: string, name: string): Promise<boolean>;
+export declare class EmailResolver {
+    private readonly mailservice;
+    constructor(mailservice: MailService);
+    sendVerificationEmail(email: string, token: string): Promise<boolean>;
 }

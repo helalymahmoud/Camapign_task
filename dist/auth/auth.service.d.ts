@@ -8,10 +8,12 @@ export declare class AuthService {
     private readonly userRepository;
     userService: any;
     mailerService: any;
+    users: any;
     constructor(jwtService: JwtService, userRepository: Repository<User>);
-    signUp(user: User): Promise<void>;
     register(registerDto: RegisterDto): Promise<string>;
     login(loginDto: LoginDto): Promise<string>;
+    sendVerificationEmail(email: string): Promise<boolean>;
+    verifyEmail(token: string): Promise<boolean>;
     HandleForgetPassword(email: string): Promise<string>;
     HandleResetPassword(token: string, newPassword: string): Promise<string>;
 }

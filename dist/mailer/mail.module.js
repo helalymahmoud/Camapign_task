@@ -6,46 +6,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MailModule = void 0;
-const mailer_1 = require("@nestjs-modules/mailer");
-const handlebars_adapter_1 = require("@nestjs-modules/mailer/dist/adapters/handlebars.adapter");
+exports.EmailModule = void 0;
 const common_1 = require("@nestjs/common");
 const mail_service_1 = require("./mail.service");
-const path_1 = require("path");
-const config_1 = require("@nestjs/config");
-let MailModule = class MailModule {
+let EmailModule = class EmailModule {
 };
-exports.MailModule = MailModule;
-exports.MailModule = MailModule = __decorate([
-    (0, common_1.Global)(),
+exports.EmailModule = EmailModule;
+exports.EmailModule = EmailModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            mailer_1.MailerModule.forRootAsync({
-                useFactory: async (config) => ({
-                    transport: {
-                        host: config.get('MAIL_HOST'),
-                        secure: false,
-                        auth: {
-                            user: config.get('MAIL_USER'),
-                            pass: config.get('MAIL_PASSWORD'),
-                        },
-                    },
-                    defaults: {
-                        from: `"No Reply" <${config.get('MAIL_FROM')}>`,
-                    },
-                    template: {
-                        dir: (0, path_1.join)(__dirname, 'templates'),
-                        adapter: new handlebars_adapter_1.HandlebarsAdapter(),
-                        options: {
-                            strict: true,
-                        },
-                    },
-                }),
-                inject: [config_1.ConfigService],
-            }),
-        ],
-        providers: [mail_service_1.MailService,],
+        providers: [mail_service_1.MailService],
         exports: [mail_service_1.MailService],
     })
-], MailModule);
+], EmailModule);
 //# sourceMappingURL=mail.module.js.map

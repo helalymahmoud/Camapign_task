@@ -1,25 +1,33 @@
-import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
-import { User } from 'src/users/entities/user.entity';
+import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class MailService {
-  sendWelcomeEmail(email: string, name: string) {
-      throw new Error('Method not implemented.');
-  } 
-  constructor(private mailerService: MailerService) {}
+  private transporter;
 
-  async sendUserConfirmation(user: User, token: string) {
-    const url = `example.com/auth/confirm?token=${token}`;
-
-    await this.mailerService.sendMail({
-      to: user.email,
-      subject: 'Welcome to Nice App! Confirm your Email',
-      template: './confirmation', 
-      context: { 
-        name: user.name,
-        url,
+  constructor() {
+    this.transporter = nodemailer.createTransport({
+      host: 'kapewo4906@pixdd.com',     
+      port: 587,  
+      secure: false,     
+      auth: {
+        user: 'mahmoud.hisham.7370@gmail.cmom',
+        pass: '73707370mahmoud', 
       },
-    });
+    }); 
   }
-} 
+
+  async sendVerificationEmail(to: string, token: string) {
+    const verificationUrl = `http://your-frontend-url.com/verify?token=${token}`;
+
+    const mailOptions = {
+      from: '"Your App Name" <kapewo4906@pixdd.com>',  
+      to: 'me@me.com',
+      subject: 'Stockist interest form',
+      text: `Please verify your email by clicking on the following link: ${verificationUrl}`,
+      html: `<p>Please verify your email by clicking on the following link:</p><a href="${verificationUrl}">Verify Email</a>`,
+    };
+
+    return await this.transporter.sendMail(mailOptions);
+  }
+}

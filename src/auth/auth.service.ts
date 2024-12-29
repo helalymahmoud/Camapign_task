@@ -10,17 +10,16 @@ import { RegisterDto } from './dto/register.dto';
 export class AuthService {
   userService: any;
   mailerService: any;
+  users: any;
   constructor(
     private readonly jwtService: JwtService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,) 
     {}
 
-
-    async signUp(user: User) {
-      const token = Math.floor(1000 + Math.random() * 9000).toString();
-      await this.mailerService.sendUserConfirmation(user, token);
-    }
-
+    // async signUp(user: User) {
+    //   const token = Math.floor(1000 + Math.random() * 9000).toString();
+    //   await this.mailerService.sendUserConfirmation(user, token);
+    // }
 
 
 
@@ -37,6 +36,8 @@ export class AuthService {
     return this.jwtService.sign({ sub: user.id, email: user.email, role: user.role });
   }
 
+
+
   async login(loginDto: LoginDto): Promise<string> {
     const { email, password } = loginDto;
     const user = await this.userRepository.findOne({ where: { email } });
@@ -45,6 +46,31 @@ export class AuthService {
     }
     return this.jwtService.sign({ sub: user.id, email: user.email, role: user.role });
   }
+
+
+
+  async sendVerificationEmail(email: string): Promise<boolean> {
+      const user = this.users.find((u) => u.email === email);
+      if (!user) throw new Error('User not found');
+  
+      const token = uuidv4();
+      user.verificationToken = token;
+  
+      await this.mailerService.sendVerificationEmail(email, token);
+      return true;
+    }
+  
+
+    async verifyEmail(token: string): Promise<boolean> {
+      const user = this.users.find((u) => u.verificationToken === token);
+      if (!user) throw new Error('Invalid token');
+  
+      user.isVerified = true;
+      user.verificationToken = null   
+      return true;
+    }
+
+    
 
   async HandleForgetPassword (email: string): Promise<string> {
     const user = await this.userService.findByEmail(email);
@@ -79,9 +105,10 @@ export class AuthService {
       throw new Error('Invalid or expired token');
     }
   }
-  
 
+}
 
-
+function uuidv4() {
+  throw new Error('Function not implemented.');
 }
      

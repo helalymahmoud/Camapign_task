@@ -24,10 +24,6 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
     }
-    async signUp(user) {
-        const token = Math.floor(1000 + Math.random() * 9000).toString();
-        await this.mailerService.sendUserConfirmation(user, token);
-    }
     async register(registerDto) {
         const { name, email, password } = registerDto;
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -47,6 +43,23 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
         return this.jwtService.sign({ sub: user.id, email: user.email, role: user.role });
+    }
+    async sendVerificationEmail(email) {
+        const user = this.users.find((u) => u.email === email);
+        if (!user)
+            throw new Error('User not found');
+        const token = uuidv4();
+        user.verificationToken = token;
+        await this.mailerService.sendVerificationEmail(email, token);
+        return true;
+    }
+    async verifyEmail(token) {
+        const user = this.users.find((u) => u.verificationToken === token);
+        if (!user)
+            throw new Error('Invalid token');
+        user.isVerified = true;
+        user.verificationToken = null;
+        return true;
     }
     async HandleForgetPassword(email) {
         const user = await this.userService.findByEmail(email);
@@ -85,4 +98,7 @@ exports.AuthService = AuthService = __decorate([
     __metadata("design:paramtypes", [jwt_1.JwtService,
         typeorm_2.Repository])
 ], AuthService);
+function uuidv4() {
+    throw new Error('Function not implemented.');
+}
 //# sourceMappingURL=auth.service.js.map

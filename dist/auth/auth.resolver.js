@@ -27,6 +27,12 @@ let AuthResolver = class AuthResolver {
     async Login(loginDto) {
         return this.authService.login(loginDto);
     }
+    async sendVerificationEmail(email) {
+        return await this.verificationService.sendVerificationEmail(email);
+    }
+    async verifyEmail(token) {
+        return await this.verificationService.verifyEmail(token);
+    }
     async forgetPassword(email) {
         return this.authService.HandleForgetPassword(email);
     }
@@ -49,6 +55,20 @@ __decorate([
     __metadata("design:paramtypes", [login_dto_1.LoginDto]),
     __metadata("design:returntype", Promise)
 ], AuthResolver.prototype, "Login", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => Boolean),
+    __param(0, (0, graphql_1.Args)('email')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AuthResolver.prototype, "sendVerificationEmail", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => Boolean),
+    __param(0, (0, graphql_1.Args)('token')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AuthResolver.prototype, "verifyEmail", null);
 __decorate([
     (0, graphql_1.Mutation)(() => String),
     __param(0, (0, graphql_1.Args)('email')),
