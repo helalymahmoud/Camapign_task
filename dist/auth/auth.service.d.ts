@@ -12,8 +12,8 @@ export declare class AuthService {
     constructor(jwtService: JwtService, userRepository: Repository<User>);
     register(registerDto: RegisterDto): Promise<string>;
     login(loginDto: LoginDto): Promise<string>;
-    sendVerificationEmail(email: string): Promise<boolean>;
-    verifyEmail(token: string): Promise<boolean>;
+    sendVerificationEmail(email: string): Promise<any>;
+    verifyEmail(Otp: string): Promise<boolean>;
     HandleForgetPassword(email: string): Promise<string>;
     HandleResetPassword(token: string, newPassword: string): Promise<string>;
 }

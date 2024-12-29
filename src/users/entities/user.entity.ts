@@ -12,6 +12,7 @@ export class User {
   id:string
 
   @Field(()=>String)
+  @Column()
   name: string; 
 
   @Field(()=>String)

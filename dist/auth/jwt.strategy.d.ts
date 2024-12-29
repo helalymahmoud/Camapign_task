@@ -1,9 +1,10 @@
-import { ConfigService } from '@nestjs/config';
+import { AuthService } from './auth.service';
 declare const JwtStrategy_base: new (...args: any[]) => any;
 export declare class JwtStrategy extends JwtStrategy_base {
-    private readonly configService;
+    private readonly authService;
     authenticationService: any;
-    constructor(configService: ConfigService);
-    validate(email: string, password: string): Promise<any>;
+    constructor(authService: AuthService);
+    validateemail(email: string, password: string): Promise<any>;
+    validatepassword(email: string, password: string): Promise<any>;
 }
 export {};

@@ -2,17 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateAdInput } from './dto/create-ad.input';
 import { Ad } from './entities/ads.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AdService {
-  [x: string]: any; constructor(
-  @InjectRepository(Ad) private readonly adRepository ) {}
+  [x: string]: any; constructor(@InjectRepository(Ad) 
+  private readonly adRepository :Repository<Ad>,
+ ) {}
 
-  public async getAllAdsByCampaignIds(
-    campaignId: readonly string[], 
-  ): Promise<Ad[]> {
-    return await this.adRepository.getAllAdsByCampaignIds(campaignId);
-  }
+  // public async getAllAdsByCampaignIds(
+  //   campaignId: readonly string[], 
+  // ): Promise<Ad[]> {
+  //   return await this.adRepository.getAllAdsByCampaignIds(campaignId);
+  // }
 
   public async CampaignAdsByBatch(
     campaignId: readonly string[],
@@ -34,7 +36,7 @@ async findAll():Promise<Ad[]>{
 }
 
 async findOne(id:string):Promise<Ad>{
-  return this.adRepository.findOne(id);
+  return this.adRepository.findOne({where:{id}});
 }
 
 async create(CreateAdInput:CreateAdInput):Promise<Ad>{
@@ -42,10 +44,10 @@ async create(CreateAdInput:CreateAdInput):Promise<Ad>{
   return this.adRepository.save(ad);
 }
 
-async update(id:string,updateAdInput:CreateAdInput):Promise<Ad>{
-  await this.adRepository.update(id,updateAdInput);
-  return this.findOne(id)
-}
+// async update(id:string,updateAdInput:CreateAdInput):Promise<Ad>{
+//   await this.adRepository.update(id,updateAdInput);
+//   return this.findOne(id)
+// }
 
 async remove (id:string):Promise<void>{
   await this.adRepository.delete(id)

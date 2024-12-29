@@ -38,7 +38,7 @@ let AuthService = class AuthService {
     }
     async login(loginDto) {
         const { email, password } = loginDto;
-        const user = await this.userRepository.findOne({ where: { email } });
+        const user = await this.userService.findOne({ where: { email } });
         if (!user || !(await bcrypt.compare(password, user.password))) {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
@@ -53,10 +53,10 @@ let AuthService = class AuthService {
         await this.mailerService.sendVerificationEmail(email, token);
         return true;
     }
-    async verifyEmail(token) {
-        const user = this.users.find((u) => u.verificationToken === token);
+    async verifyEmail(Otp) {
+        const user = this.users.find((u) => u.verificationOtpCode === Otp);
         if (!user)
-            throw new Error('Invalid token');
+            throw new Error('Invalid Otp');
         user.isVerified = true;
         user.verificationToken = null;
         return true;

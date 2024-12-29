@@ -8,10 +8,14 @@ import { RolesGuard } from './roles.guard';
 import { User } from 'src/users/entities/user.entity';
 import { ConfigModule } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { UsersModule } from 'src/users/users.module';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
     MailerModule,
+    UsersModule,
+    PassportModule,
     ConfigModule,
     TypeOrmModule.forFeature([User]),
     JwtModule.register({

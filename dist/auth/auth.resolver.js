@@ -30,8 +30,8 @@ let AuthResolver = class AuthResolver {
     async sendVerificationEmail(email) {
         return await this.verificationService.sendVerificationEmail(email);
     }
-    async verifyEmail(token) {
-        return await this.verificationService.verifyEmail(token);
+    async verifyEmail(otp) {
+        return await this.verificationService.verifyEmail(otp);
     }
     async forgetPassword(email) {
         return this.authService.HandleForgetPassword(email);
@@ -64,7 +64,7 @@ __decorate([
 ], AuthResolver.prototype, "sendVerificationEmail", null);
 __decorate([
     (0, graphql_1.Mutation)(() => Boolean),
-    __param(0, (0, graphql_1.Args)('token')),
+    __param(0, (0, graphql_1.Args)('otp')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)

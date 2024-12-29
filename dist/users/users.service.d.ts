@@ -3,8 +3,8 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 export declare class UsersService {
     private readonly userRepository;
-    findUsersByCampaign(id: string): void;
     constructor(userRepository: Repository<User>);
+    creatToken({ name, email }: User): string;
     createUser(data: {
         name: string;
         email: string;

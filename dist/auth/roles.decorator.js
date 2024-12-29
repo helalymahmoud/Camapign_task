@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Roles = void 0;
+exports.CurrentUser = void 0;
 const common_1 = require("@nestjs/common");
-const Roles = (...roles) => (0, common_1.SetMetadata)('roles', roles);
-exports.Roles = Roles;
+exports.CurrentUser = (0, common_1.createParamDecorator)((data, context) => {
+    const ctx = context.getArgByIndex(2);
+    return ctx.req.user;
+});
 //# sourceMappingURL=roles.decorator.js.map

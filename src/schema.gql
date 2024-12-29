@@ -93,7 +93,7 @@ type Mutation {
   Register(data: RegisterDto!): String!
   Login(data: LoginDto!): String!
   sendVerificationEmail(email: String!): Boolean!
-  verifyEmail(token: String!): Boolean!
+  verifyEmail(otp: String!): Boolean!
   forgetPassword(email: String!): String!
   resetPassword(token: String!, newPassword: String!): String!
   createPartner(createPartnerInput: CreatePartnerInput!): Partner!
@@ -127,6 +127,7 @@ input UpdateUserDto {
 input RegisterDto {
   name: String!
   email: String!
+  password: String!
 }
 
 input LoginDto {

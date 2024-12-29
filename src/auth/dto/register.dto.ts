@@ -17,6 +17,8 @@ export class RegisterDto {
   @IsEmail()
   email: string;
 
+  
+  @Field()
   @IsString()
   @MinLength(6)
   password: string;

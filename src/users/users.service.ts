@@ -4,15 +4,19 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import * as jwt from 'jsonwebtoken'
 @Injectable()
 export class UsersService {
-  findUsersByCampaign(id: string) {
-      throw new Error('Method not implemented.');
-  }
-  constructor(
-    @InjectRepository(User)
+
+
+  constructor(@InjectRepository(User)
     private readonly userRepository: Repository<User>,){}
+
+
+
+    creatToken({name,email}:User){
+    return jwt.sign({name,email},'secret')
+    }
 
 
     async createUser(data: { name: string; email: string; password: string }): Promise<User> {

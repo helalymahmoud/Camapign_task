@@ -16,12 +16,10 @@ exports.AdService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const ads_entity_1 = require("./entities/ads.entity");
+const typeorm_2 = require("typeorm");
 let AdService = class AdService {
     constructor(adRepository) {
         this.adRepository = adRepository;
-    }
-    async getAllAdsByCampaignIds(campaignId) {
-        return await this.adRepository.getAllAdsByCampaignIds(campaignId);
     }
     async CampaignAdsByBatch(campaignId) {
         const ads = await this.getAllAdsByCampaignIds(campaignId);
@@ -35,15 +33,11 @@ let AdService = class AdService {
         return this.adRepository.find();
     }
     async findOne(id) {
-        return this.adRepository.findOne(id);
+        return this.adRepository.findOne({ where: { id } });
     }
     async create(CreateAdInput) {
         const ad = this.adRepository.create(CreateAdInput);
         return this.adRepository.save(ad);
-    }
-    async update(id, updateAdInput) {
-        await this.adRepository.update(id, updateAdInput);
-        return this.findOne(id);
     }
     async remove(id) {
         await this.adRepository.delete(id);
@@ -53,6 +47,6 @@ exports.AdService = AdService;
 exports.AdService = AdService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(ads_entity_1.Ad)),
-    __metadata("design:paramtypes", [Object])
+    __metadata("design:paramtypes", [typeorm_2.Repository])
 ], AdService);
 //# sourceMappingURL=ads.service.js.map

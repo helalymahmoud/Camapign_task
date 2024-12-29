@@ -22,7 +22,6 @@ export class AuthService {
     // }
 
 
-
   async register(registerDto: RegisterDto): Promise<string> {
     const { name, email, password } = registerDto;
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -40,7 +39,7 @@ export class AuthService {
 
   async login(loginDto: LoginDto): Promise<string> {
     const { email, password } = loginDto;
-    const user = await this.userRepository.findOne({ where: { email } });
+    const user = await this.userService.findOne({ where: { email } });
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -48,8 +47,7 @@ export class AuthService {
   }
 
 
-
-  async sendVerificationEmail(email: string): Promise<boolean> {
+  async sendVerificationEmail(email: string): Promise<any> {
       const user = this.users.find((u) => u.email === email);
       if (!user) throw new Error('User not found');
   
@@ -61,9 +59,9 @@ export class AuthService {
     }
   
 
-    async verifyEmail(token: string): Promise<boolean> {
-      const user = this.users.find((u) => u.verificationToken === token);
-      if (!user) throw new Error('Invalid token');
+    async verifyEmail(Otp: string): Promise<boolean> {
+      const user = this.users.find((u) => u.verificationOtpCode === Otp);
+      if (!user) throw new Error('Invalid Otp');
   
       user.isVerified = true;
       user.verificationToken = null   
