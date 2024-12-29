@@ -12,6 +12,8 @@ import { RolesGuard } from '../auth/roles.guard';
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
+
+
   @Query(() => [User])
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('Admin') 
@@ -29,12 +31,32 @@ export class UsersResolver {
     return this.usersService.findOne(id);
   }
 
-  @Mutation(() => User)
+  @Query(() => User, { nullable: true })
+  async validateUser(
+    @Args('email') email: string,
+    @Args('password') password: string,
+  ): Promise<User> {
+    return await this.usersService.validateUser(email, password);
+  }
+
+
+  // @Mutation(() => User)
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  // @Roles('Admin') 
+  // async createUser(
+  //   @Args('createUserDto') createUserDto: CreateUserDto): Promise<User> {
+  //   return this.usersService.create(createUserDto);
+  // }
+
+ @Mutation(() => User)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('Admin') 
   async createUser(
-    @Args('createUserDto') createUserDto: CreateUserDto): Promise<User> {
-    return this.usersService.create(createUserDto);
+    @Args('name') name: string,
+    @Args('email') email: string,
+    @Args('password') password: string,
+  ): Promise<User> {
+    return await this.usersService.createUser({ name, email, password });
   }
 
   @Mutation(() => User)
@@ -46,6 +68,17 @@ export class UsersResolver {
     return this.usersService.update(id,updateUserDto);
   }
 
+ 
+  @Mutation(() => Boolean)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+    async updatePassword(
+      @Args('userId') userId: string,
+      @Args('newPassword') newPassword: string,
+    ): Promise<boolean> {
+      await this.usersService.updatePassword(userId, newPassword);
+      return true;
+  }
+
   @Mutation(() => Boolean)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('Admin') 
@@ -54,5 +87,5 @@ export class UsersResolver {
     await this.usersService.remove(id);
     return true;
   }
-  
+
 }

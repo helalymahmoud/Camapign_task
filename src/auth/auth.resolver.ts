@@ -28,7 +28,7 @@ export class AuthResolver {
   @Mutation(() => Boolean)
     async verifyEmail(@Args('token') token: string): Promise<boolean> {
       return await this.verificationService.verifyEmail(token);
-    }
+    } 
 
   @Mutation(() => String)
   async forgetPassword(@Args('email') email: string): Promise<string> {

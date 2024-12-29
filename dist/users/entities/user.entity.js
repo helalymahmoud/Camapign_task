@@ -28,10 +28,6 @@ __decorate([
 ], User.prototype, "name", void 0);
 __decorate([
     (0, graphql_1.Field)(() => String),
-    __metadata("design:type", String)
-], User.prototype, "adress", void 0);
-__decorate([
-    (0, graphql_1.Field)(() => String),
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);

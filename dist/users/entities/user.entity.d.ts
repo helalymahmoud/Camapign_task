@@ -4,7 +4,6 @@ export declare class User {
     [x: string]: any;
     id: string;
     name: string;
-    adress: string;
     email: string;
     password: string;
     role: string;

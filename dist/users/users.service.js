@@ -25,6 +25,33 @@ let UsersService = class UsersService {
     constructor(userRepository) {
         this.userRepository = userRepository;
     }
+    async createUser(data) {
+        const hashedPassword = await bcrypt.hash(data.password, 10);
+        const user = this.userRepository.create({
+            ...data,
+            password: hashedPassword,
+        });
+        return await this.userRepository.save(user);
+    }
+    async findByEmail(email) {
+        return await this.userRepository.findOne({ where: { email } });
+    }
+    async validateUser(email, password) {
+        const user = await this.findByEmail(email);
+        if (!user) {
+            throw new common_1.UnauthorizedException('Invalid email or password');
+        }
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            throw new common_1.UnauthorizedException('Invalid email or password');
+        }
+        return user;
+    }
+    async updatePassword(userId, newPassword) {
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await this.userRepository.update(userId, { password: hashedPassword });
+        return await this.userRepository.findOne({ where: { userId } });
+    }
     async findAll() {
         return this.userRepository.find({ relations: ['joinedCampaigns'] });
     }
