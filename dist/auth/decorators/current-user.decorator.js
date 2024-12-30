@@ -6,4 +6,4 @@ exports.CurrentUser = (0, common_1.createParamDecorator)((data, context) => {
     const ctx = context.getArgByIndex(2);
     return ctx.req.user;
 });
-//# sourceMappingURL=roles.decorator.js.map
+//# sourceMappingURL=current-user.decorator.js.map

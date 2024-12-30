@@ -57,7 +57,6 @@ exports.AppModule = AppModule = __decorate([
                 useFactory: (DataloaderService) => {
                     return {
                         autoSchemaFile: (0, path_1.join)(process.cwd(), 'src/schema.gql'),
-                        debug: true,
                         playground: true,
                         context: async ({ req, res, }) => {
                             return {

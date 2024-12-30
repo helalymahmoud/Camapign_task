@@ -4,16 +4,17 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { RolesGuard } from '../auth/roles.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @Resolver(() => User)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
   @Query(() => [User])
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('Admin') 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('Admin') 
   async Users(): Promise<User[]> {
   const users =await this.usersService.findAll();
   return users || []
@@ -22,8 +23,8 @@ export class UsersResolver {
 
  
   @Query(() => User)
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('Admin') 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('user') 
   async User(
     @Args('id') id: string): Promise<User> {
     return this.usersService.findOne(id);
@@ -87,3 +88,7 @@ export class UsersResolver {
   }
 
 }
+function CurrentUser(): (target: UsersResolver, propertyKey: "Users", parameterIndex: 0) => void {
+  throw new Error('Function not implemented.');
+}
+

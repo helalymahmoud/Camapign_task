@@ -17,6 +17,7 @@ const graphql_1 = require("@nestjs/graphql");
 const auth_service_1 = require("./auth.service");
 const login_dto_1 = require("./dto/login.dto");
 const register_dto_1 = require("./dto/register.dto");
+const user_entity_1 = require("../users/entities/user.entity");
 let AuthResolver = class AuthResolver {
     constructor(authService) {
         this.authService = authService;
@@ -24,11 +25,11 @@ let AuthResolver = class AuthResolver {
     async Register(registerDto) {
         return this.authService.register(registerDto);
     }
-    async Login(loginDto) {
+    async login(loginDto) {
         return this.authService.login(loginDto);
     }
     async sendVerificationEmail(email) {
-        return await this.verificationService.sendVerificationEmail(email);
+        return this.authService.sendVerificationEmail(email);
     }
     async verifyEmail(otp) {
         return await this.verificationService.verifyEmail(otp);
@@ -49,14 +50,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthResolver.prototype, "Register", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => String),
+    (0, graphql_1.Mutation)(() => user_entity_1.User),
     __param(0, (0, graphql_1.Args)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [login_dto_1.LoginDto]),
     __metadata("design:returntype", Promise)
-], AuthResolver.prototype, "Login", null);
+], AuthResolver.prototype, "login", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => Boolean),
+    (0, graphql_1.Mutation)(() => Boolean, { description: 'Send verification email to user' }),
     __param(0, (0, graphql_1.Args)('email')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

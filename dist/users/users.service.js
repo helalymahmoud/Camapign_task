@@ -18,13 +18,12 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const user_entity_1 = require("./entities/user.entity");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 let UsersService = class UsersService {
+    findById(id) {
+        throw new Error('Method not implemented.');
+    }
     constructor(userRepository) {
         this.userRepository = userRepository;
-    }
-    creatToken({ name, email }) {
-        return jwt.sign({ name, email }, 'secret');
     }
     async createUser(data) {
         const hashedPassword = await bcrypt.hash(data.password, 10);

@@ -7,16 +7,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 import * as jwt from 'jsonwebtoken'
 @Injectable()
 export class UsersService {
+  findById(id: any) {
+    throw new Error('Method not implemented.');
+  }
 
 
   constructor(@InjectRepository(User)
     private readonly userRepository: Repository<User>,){}
-
-
-
-    creatToken({name,email}:User){
-    return jwt.sign({name,email},'secret')
-    }
 
 
     async createUser(data: { name: string; email: string; password: string }): Promise<User> {

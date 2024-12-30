@@ -19,10 +19,12 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const bcrypt = require("bcrypt");
 const user_entity_1 = require("../users/entities/user.entity");
+const mail_service_1 = require("../mailer/mail.service");
 let AuthService = class AuthService {
-    constructor(jwtService, userRepository) {
+    constructor(jwtService, userRepository, mailerService) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
+        this.mailerService = mailerService;
     }
     async register(registerDto) {
         const { name, email, password } = registerDto;
@@ -34,31 +36,32 @@ let AuthService = class AuthService {
             role: 'User',
         });
         await this.userRepository.save(user);
+        this.sendVerificationEmail(email);
         return this.jwtService.sign({ sub: user.id, email: user.email, role: user.role });
     }
     async login(loginDto) {
         const { email, password } = loginDto;
-        const user = await this.userService.findOne({ where: { email } });
-        if (!user || !(await bcrypt.compare(password, user.password))) {
-            throw new common_1.UnauthorizedException('Invalid credentials');
-        }
-        return this.jwtService.sign({ sub: user.id, email: user.email, role: user.role });
+        const user = await this.userRepository.findOne({ where: { email } });
+        if (!user)
+            throw new common_1.BadRequestException('invalid email or paasword');
+        const isPasswordMatch = await bcrypt.compare(password, user.password);
+        if (!password)
+            throw new common_1.BadRequestException('invalid email or paasword');
+        return user;
     }
     async sendVerificationEmail(email) {
-        const user = this.users.find((u) => u.email === email);
-        if (!user)
-            throw new Error('User not found');
-        const token = uuidv4();
-        user.verificationToken = token;
-        await this.mailerService.sendVerificationEmail(email, token);
-        return true;
-    }
-    async verifyEmail(Otp) {
-        const user = this.users.find((u) => u.verificationOtpCode === Otp);
-        if (!user)
-            throw new Error('Invalid Otp');
-        user.isVerified = true;
-        user.verificationToken = null;
+        const user = await this.userRepository.findOne({ where: { email } });
+        if (!user) {
+            throw new common_1.BadRequestException('User not found');
+        }
+        const verificationToken = uuidv4();
+        user.verificationToken = verificationToken;
+        await this.userRepository.save(user);
+        await this.mailService.sendMail({
+            to: user.email,
+            subject: 'Verify Your Email',
+            html: `<h1>Hello ${user.name}</h1><p>Verify your email using the token: ${verificationToken}</p>`,
+        });
         return true;
     }
     async HandleForgetPassword(email) {
@@ -68,7 +71,7 @@ let AuthService = class AuthService {
         }
         const token = this.jwtService.sign({ id: user.id }, { expiresIn: '1h' });
         const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
-        await this.mailerService.sendMail({
+        await this.mailService.sendMail({
             to: email,
             subject: 'Reset Password',
             text: `Click this link to reset your password: ${resetLink}`,
@@ -96,7 +99,8 @@ exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __metadata("design:paramtypes", [jwt_1.JwtService,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        mail_service_1.MailService])
 ], AuthService);
 function uuidv4() {
     throw new Error('Function not implemented.');

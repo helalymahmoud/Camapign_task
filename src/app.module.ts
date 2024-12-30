@@ -47,7 +47,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 
         
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      debug:true,
+      // debug:true,
       playground: true,
       context: async({req,res,}) =>{ 
         return {

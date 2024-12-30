@@ -15,24 +15,15 @@ const nodemailer = require("nodemailer");
 let MailService = class MailService {
     constructor() {
         this.transporter = nodemailer.createTransport({
-            host: 'kapewo4906@pixdd.com',
-            port: 587,
-            secure: false,
+            host: process.env.MAIL_HOST,
+            port: process.env.MAIL_PORT,
             auth: {
-                user: 'mahmoud.hisham.7370@gmail.cmom',
-                pass: '73707370mahmoud',
+                user: process.env.MAIL_USER,
+                pass: process.env.MAIL_PASSWORD
             },
         });
     }
-    async sendVerificationEmail(to, token) {
-        const verificationUrl = `http://your-frontend-url.com/verify?token=${token}`;
-        const mailOptions = {
-            from: '"Your App Name" <kapewo4906@pixdd.com>',
-            to: 'me@me.com',
-            subject: 'Stockist interest form',
-            text: `Please verify your email by clicking on the following link: ${verificationUrl}`,
-            html: `<p>Please verify your email by clicking on the following link:</p><a href="${verificationUrl}">Verify Email</a>`,
-        };
+    async sendVerificationEmail(mailOptions) {
         return await this.transporter.sendMail(mailOptions);
     }
 };

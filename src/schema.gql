@@ -91,7 +91,9 @@ type Mutation {
   removeUser(id: String!): Boolean!
   SendNotification(FcmToken: String!, Title: String!, Body: String!): String!
   Register(data: RegisterDto!): String!
-  Login(data: LoginDto!): String!
+  login(data: LoginDto!): User!
+
+  """Send verification email to user"""
   sendVerificationEmail(email: String!): Boolean!
   verifyEmail(otp: String!): Boolean!
   forgetPassword(email: String!): String!

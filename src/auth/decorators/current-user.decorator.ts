@@ -1,8 +1,8 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
 export const CurrentUser = createParamDecorator(
-  (data: unknown, context: ExecutionContext) => {
+  (data: any, context: ExecutionContext) => {
     const ctx = context.getArgByIndex(2); 
-    return ctx.req.user;      
+    return ctx.req.user;
   },
 );

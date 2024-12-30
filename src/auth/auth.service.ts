@@ -1,25 +1,25 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/entities/user.entity';
-import { LoginDto } from './dto/login.dto';
+// import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
+import { MailerService } from '@nestjs-modules/mailer';
+import { MailService } from 'src/mailer/mail.service';
 @Injectable()
 export class AuthService {
+  mailService: any;
   userService: any;
-  mailerService: any;
-  users: any;
+ users: any;
   constructor(
     private readonly jwtService: JwtService,
-    @InjectRepository(User) private readonly userRepository: Repository<User>,) 
-    {}
-
-    // async signUp(user: User) {
-    //   const token = Math.floor(1000 + Math.random() * 9000).toString();
-    //   await this.mailerService.sendUserConfirmation(user, token);
-    // }
+    @InjectRepository(User)
+     private readonly userRepository: Repository<User>, 
+     private readonly mailerService: MailService,
+  ){}
 
 
   async register(registerDto: RegisterDto): Promise<string> {
@@ -32,43 +32,73 @@ export class AuthService {
       role: 'User', 
     });
     await this.userRepository.save(user);
+    this.sendVerificationEmail(email)
     return this.jwtService.sign({ sub: user.id, email: user.email, role: user.role });
   }
 
 
+  public async login (loginDto:LoginDto){
+    const {email,password}=loginDto;
 
-  async login(loginDto: LoginDto): Promise<string> {
-    const { email, password } = loginDto;
-    const user = await this.userService.findOne({ where: { email } });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-    return this.jwtService.sign({ sub: user.id, email: user.email, role: user.role });
+    const user =await this.userRepository.findOne({where:{email}});
+    if(!user) throw new BadRequestException('invalid email or paasword');
+
+    const isPasswordMatch =await bcrypt.compare(password,user.password);
+    if(!password) throw new BadRequestException('invalid email or paasword');
+
+    return user
+
   }
-
-
-  async sendVerificationEmail(email: string): Promise<any> {
-      const user = this.users.find((u) => u.email === email);
-      if (!user) throw new Error('User not found');
   
-      const token = uuidv4();
-      user.verificationToken = token;
-  
-      await this.mailerService.sendVerificationEmail(email, token);
-      return true;
-    }
-  
-
-    async verifyEmail(Otp: string): Promise<boolean> {
-      const user = this.users.find((u) => u.verificationOtpCode === Otp);
-      if (!user) throw new Error('Invalid Otp');
-  
-      user.isVerified = true;
-      user.verificationToken = null   
-      return true;
-    }
-
     
+
+  async sendVerificationEmail(email: string): Promise<boolean> {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const verificationToken = uuidv4();
+    user.verificationToken = verificationToken;
+
+    await this.userRepository.save(user);
+
+    await this.mailService.sendMail({
+      to: user.email,
+      subject: 'Verify Your Email',
+      html: `<h1>Hello ${user.name}</h1><p>Verify your email using the token: ${verificationToken}</p>`,
+    } as any);
+    return true;
+    
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
 
   async HandleForgetPassword (email: string): Promise<string> {
     const user = await this.userService.findByEmail(email);
@@ -80,13 +110,17 @@ export class AuthService {
       { expiresIn: '1h' } 
     );
     const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
-    await this.mailerService.sendMail({
+    await this.mailService.sendMail({
       to: email,
       subject: 'Reset Password',
       text: `Click this link to reset your password: ${resetLink}`,
     });
     return 'Password reset link has been sent to your email';
   }
+
+
+
+
 
 
   async HandleResetPassword(token: string, newPassword: string): Promise<string> {

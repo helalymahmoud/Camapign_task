@@ -13,12 +13,13 @@ const auth_service_1 = require("./auth.service");
 const auth_resolver_1 = require("./auth.resolver");
 const jwt_1 = require("@nestjs/jwt");
 const jwt_strategy_1 = require("./jwt.strategy");
-const roles_guard_1 = require("./roles.guard");
+const roles_guard_1 = require("./guards/roles.guard");
 const user_entity_1 = require("../users/entities/user.entity");
 const config_1 = require("@nestjs/config");
 const mailer_1 = require("@nestjs-modules/mailer");
 const users_module_1 = require("../users/users.module");
 const passport_1 = require("@nestjs/passport");
+const mail_service_1 = require("../mailer/mail.service");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -31,7 +32,7 @@ exports.AuthModule = AuthModule = __decorate([
             config_1.ConfigModule,
             typeorm_1.TypeOrmModule.forFeature([user_entity_1.User]),
             jwt_1.JwtModule.register({
-                secret: process.env.JWT_SECRET,
+                secret: process.env.JWT_SECRET || 'secretKey',
                 signOptions: { expiresIn: '1d' },
             }),
         ],
@@ -39,7 +40,8 @@ exports.AuthModule = AuthModule = __decorate([
             auth_service_1.AuthService,
             auth_resolver_1.AuthResolver,
             jwt_strategy_1.JwtStrategy,
-            roles_guard_1.RolesGuard
+            roles_guard_1.RolesGuard,
+            mail_service_1.MailService
         ],
         exports: [auth_service_1.AuthService],
     })

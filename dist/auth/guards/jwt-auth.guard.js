@@ -8,18 +8,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JwtAuthGuard = void 0;
 const common_1 = require("@nestjs/common");
-const execution_context_host_1 = require("@nestjs/core/helpers/execution-context-host");
-const graphql_1 = require("@nestjs/graphql");
 const passport_1 = require("@nestjs/passport");
 let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
-    async canActivate(context) {
-        const ctx = graphql_1.GqlExecutionContext.create(context);
-        const { req } = ctx.getContext();
-        req.body = ctx.getArgs();
-        await super.canActivate(new execution_context_host_1.ExecutionContextHost([req]));
-        await super.logIn(req);
-        return true;
-    }
 };
 exports.JwtAuthGuard = JwtAuthGuard;
 exports.JwtAuthGuard = JwtAuthGuard = __decorate([

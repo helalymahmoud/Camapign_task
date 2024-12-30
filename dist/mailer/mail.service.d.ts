@@ -1,5 +1,5 @@
 export declare class MailService {
     private transporter;
     constructor();
-    sendVerificationEmail(to: string, token: string): Promise<any>;
+    sendVerificationEmail(mailOptions: any): Promise<any>;
 }

@@ -4,13 +4,11 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 // import { LoginResponse } from './dto/login-response';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from './jwt-auth.guard';
-import { RolesGuard } from './roles.guard';
+import { User } from 'src/users/entities/user.entity';
 @Resolver()
 export class AuthResolver {
   verificationService: any;
   constructor(private readonly authService: AuthService) {}
-
 
 
   @Mutation(() => String)
@@ -18,22 +16,44 @@ export class AuthResolver {
     return this.authService.register(registerDto);
   }
 
-  @Mutation(() => String)
-    // @UseGuards(JwtAuthGuard, RolesGuard)
-  async Login(@Args('data') loginDto: LoginDto): Promise<string> {
+  @Mutation(() => User) // You can change the return type to a custom response object if needed
+  async login(@Args('data') loginDto: LoginDto): Promise<User> {
     return this.authService.login(loginDto);
-
   }
 
-  @Mutation(() => Boolean)
-    async sendVerificationEmail(@Args('email') email: string): Promise<boolean> {
-      return await this.verificationService.sendVerificationEmail(email);
-    }
+
+  @Mutation(() => Boolean, { description: 'Send verification email to user' })
+async sendVerificationEmail(@Args('email') email: string): Promise<boolean> {
+  return this.authService.sendVerificationEmail(email);
+}
+
 
   @Mutation(() => Boolean)
     async verifyEmail(@Args('otp') otp: string): Promise<boolean> {
       return await this.verificationService.verifyEmail(otp);
     } 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   @Mutation(() => String)
   async forgetPassword(@Args('email') email: string): Promise<string> {
