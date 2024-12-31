@@ -53,6 +53,22 @@ __decorate([
     (0, typeorm_1.ManyToMany)(() => ads_entity_1.Ad, (ads) => ads.users),
     __metadata("design:type", Array)
 ], User.prototype, "ads", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "otp", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'timestamp', nullable: true }),
+    __metadata("design:type", Date)
+], User.prototype, "otpExpiresAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "resetPasswordToken", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'timestamp', nullable: true }),
+    __metadata("design:type", Date)
+], User.prototype, "resetPasswordExpiresAt", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)(),
     (0, graphql_1.ObjectType)()

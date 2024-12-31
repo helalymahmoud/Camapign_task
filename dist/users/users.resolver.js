@@ -32,9 +32,6 @@ let UsersResolver = class UsersResolver {
     async User(id) {
         return this.usersService.findOne(id);
     }
-    async validateUser(email, password) {
-        return await this.usersService.validateUser(email, password);
-    }
     async createUser(name, email, password) {
         return await this.usersService.createUser({ name, email, password });
     }
@@ -54,7 +51,7 @@ exports.UsersResolver = UsersResolver;
 __decorate([
     (0, graphql_1.Query)(() => [user_entity_1.User]),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)('Admin'),
+    (0, roles_decorator_1.Roles)('user'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
@@ -69,15 +66,9 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "User", null);
 __decorate([
-    (0, graphql_1.Query)(() => user_entity_1.User, { nullable: true }),
-    __param(0, (0, graphql_1.Args)('email')),
-    __param(1, (0, graphql_1.Args)('password')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
-    __metadata("design:returntype", Promise)
-], UsersResolver.prototype, "validateUser", null);
-__decorate([
     (0, graphql_1.Mutation)(() => user_entity_1.User),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('Admin'),
     __param(0, (0, graphql_1.Args)('name')),
     __param(1, (0, graphql_1.Args)('email')),
     __param(2, (0, graphql_1.Args)('password')),
@@ -87,6 +78,8 @@ __decorate([
 ], UsersResolver.prototype, "createUser", null);
 __decorate([
     (0, graphql_1.Mutation)(() => user_entity_1.User),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('Admin'),
     __param(0, (0, graphql_1.Args)('id')),
     __param(1, (0, graphql_1.Args)('updateUserDto')),
     __metadata("design:type", Function),
@@ -95,6 +88,8 @@ __decorate([
 ], UsersResolver.prototype, "updateUser", null);
 __decorate([
     (0, graphql_1.Mutation)(() => Boolean),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('Admin', 'user'),
     __param(0, (0, graphql_1.Args)('userId')),
     __param(1, (0, graphql_1.Args)('newPassword')),
     __metadata("design:type", Function),
@@ -103,6 +98,8 @@ __decorate([
 ], UsersResolver.prototype, "updatePassword", null);
 __decorate([
     (0, graphql_1.Mutation)(() => Boolean),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('Admin'),
     __param(0, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

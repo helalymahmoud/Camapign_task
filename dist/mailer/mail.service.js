@@ -16,15 +16,44 @@ let MailService = class MailService {
     constructor() {
         this.transporter = nodemailer.createTransport({
             host: process.env.MAIL_HOST,
-            port: process.env.MAIL_PORT,
+            port: parseInt(process.env.MAIL_PORT, 10),
+            secure: process.env.MAIL_PORT === '465',
             auth: {
                 user: process.env.MAIL_USER,
                 pass: process.env.MAIL_PASSWORD
             },
         });
     }
-    async sendVerificationEmail(mailOptions) {
-        return await this.transporter.sendMail(mailOptions);
+    async sendRestPasswordTemplate(email, resetPasswordLink) {
+        try {
+            await this.mailerservice.sendMail({
+                to: email,
+                from: `frd`,
+                Subject: 'Rest Password',
+                template: 'Rest Password',
+                Context: { resetPasswordLink }
+            });
+        }
+        catch (error) {
+            console.log(error);
+            throw new common_1.RequestTimeoutException();
+        }
+    }
+    async sendMail(to, subject, text, html) {
+        try {
+            await this.transporter.sendMail({
+                from: `"Your App Name" <${process.env.MAIL_USER}>`,
+                to,
+                subject,
+                text,
+                html,
+            });
+            return true;
+        }
+        catch (error) {
+            console.error('Error sending email:', error);
+            throw new Error('Failed to send email');
+        }
     }
 };
 exports.MailService = MailService;

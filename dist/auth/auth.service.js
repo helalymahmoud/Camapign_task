@@ -20,6 +20,7 @@ const typeorm_2 = require("typeorm");
 const bcrypt = require("bcrypt");
 const user_entity_1 = require("../users/entities/user.entity");
 const mail_service_1 = require("../mailer/mail.service");
+const crypto_1 = require("crypto");
 let AuthService = class AuthService {
     constructor(jwtService, userRepository, mailerService) {
         this.jwtService = jwtService;
@@ -28,70 +29,82 @@ let AuthService = class AuthService {
     }
     async register(registerDto) {
         const { name, email, password } = registerDto;
+        const existingUser = await this.userRepository.findOne({ where: { email } });
+        if (existingUser) {
+            throw new common_1.ConflictException('Email already in use');
+        }
         const hashedPassword = await bcrypt.hash(password, 10);
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpExpiresAt = new Date();
+        otpExpiresAt.setMinutes(otpExpiresAt.getMinutes() + 10);
         const user = this.userRepository.create({
             name,
             email,
             password: hashedPassword,
             role: 'User',
+            otp,
+            otpExpiresAt,
         });
         await this.userRepository.save(user);
-        this.sendVerificationEmail(email);
-        return this.jwtService.sign({ sub: user.id, email: user.email, role: user.role });
+        const subject = 'Verify Your Email';
+        const text = `Your verification OTP is: ${otp}`;
+        const html = `<p>Your verification OTP is:</p><h3>${otp}</h3><p>This OTP is valid for 10 minutes.</p>`;
+        await this.mailerService.sendMail(email, subject, text, html);
+        return {
+            message: 'Registration successful. Please verify your email using the OTP sent to your email address.',
+        };
+    }
+    async verifyOtp(email, otp) {
+        const user = await this.userRepository.findOne({ where: { email } });
+        if (!user) {
+            throw new common_1.NotFoundException('User not found');
+        }
+        if (!user.otp || user.otp !== otp) {
+            throw new common_1.BadRequestException('Invalid or expired OTP');
+        }
+        if (user.otpExpiresAt < new Date()) {
+            throw new common_1.BadRequestException('OTP has expired');
+        }
+        user.otp = null;
+        user.otpExpiresAt = null;
+        await this.userRepository.save(user);
+        return true;
     }
     async login(loginDto) {
         const { email, password } = loginDto;
         const user = await this.userRepository.findOne({ where: { email } });
-        if (!user)
-            throw new common_1.BadRequestException('invalid email or paasword');
+        if (!user) {
+            throw new common_1.BadRequestException('Invalid email or password');
+        }
         const isPasswordMatch = await bcrypt.compare(password, user.password);
-        if (!password)
-            throw new common_1.BadRequestException('invalid email or paasword');
-        return user;
+        if (!isPasswordMatch) {
+            throw new common_1.BadRequestException('Invalid email or password');
+        }
+        const payload = { sub: user.id, email: user.email, role: user.role };
+        const token = this.jwtService.sign(payload);
+        return { token };
     }
-    async sendVerificationEmail(email) {
+    async sendResetPasswordLink(email) {
         const user = await this.userRepository.findOne({ where: { email } });
-        if (!user) {
-            throw new common_1.BadRequestException('User not found');
-        }
-        const verificationToken = uuidv4();
-        user.verificationToken = verificationToken;
+        if (!user)
+            throw new common_1.BadRequestException('User with given email does not exist');
+        user.resetPasswordToken = (0, crypto_1.randomBytes)(32).toString('hex');
+        user.resetPasswordExpiresAt = new Date(Date.now() + 15 * 60 * 1000);
         await this.userRepository.save(user);
-        await this.mailService.sendMail({
-            to: user.email,
-            subject: 'Verify Your Email',
-            html: `<h1>Hello ${user.name}</h1><p>Verify your email using the token: ${verificationToken}</p>`,
-        });
-        return true;
+        const resetPasswordLink = `http://localhost:3001/reset-password/${user.resetPasswordToken}`;
+        await this.mailerService.sendMail(email, 'Reset Your Password', `Reset your password using this link: ${resetPasswordLink}`, `<p>Reset your password using this link:</p><a href="${resetPasswordLink}">Reset Password</a>`);
+        return { message: 'Password reset link sent to your email, please check your inbox' };
     }
-    async HandleForgetPassword(email) {
-        const user = await this.userService.findByEmail(email);
-        if (!user) {
-            throw new Error('User not found');
+    async resetPassword(token, newPassword) {
+        const user = await this.userRepository.findOne({ where: { resetPasswordToken: token } });
+        if (!user || user.resetPasswordExpiresAt < new Date()) {
+            throw new common_1.BadRequestException('Invalid or expired reset token');
         }
-        const token = this.jwtService.sign({ id: user.id }, { expiresIn: '1h' });
-        const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
-        await this.mailService.sendMail({
-            to: email,
-            subject: 'Reset Password',
-            text: `Click this link to reset your password: ${resetLink}`,
-        });
-        return 'Password reset link has been sent to your email';
-    }
-    async HandleResetPassword(token, newPassword) {
-        try {
-            const payload = this.jwtService.verify(token);
-            const user = await this.userService.findById(payload.id);
-            if (!user) {
-                throw new Error('Invalid token');
-            }
-            const hashedPassword = await bcrypt.hash(newPassword, 10);
-            await this.userService.updatePassword(user.id, hashedPassword);
-            return 'Password has been reset successfully';
-        }
-        catch (error) {
-            throw new Error('Invalid or expired token');
-        }
+        user.password = await bcrypt.hash(newPassword, 10);
+        user.resetPasswordToken = null;
+        user.resetPasswordExpiresAt = null;
+        await this.userRepository.save(user);
+        return { message: 'Password successfully reset' };
     }
 };
 exports.AuthService = AuthService;
@@ -102,7 +115,4 @@ exports.AuthService = AuthService = __decorate([
         typeorm_2.Repository,
         mail_service_1.MailService])
 ], AuthService);
-function uuidv4() {
-    throw new Error('Function not implemented.');
-}
 //# sourceMappingURL=auth.service.js.map

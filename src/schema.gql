@@ -60,7 +60,6 @@ type Query {
   Ad(id: String!): Ad!
   Users: [User!]!
   User(id: String!): User!
-  validateUser(email: String!, password: String!): User
   Partners: [Partner!]!
   Partner(id: String!): Partner!
   Tickets: [Ticket!]!
@@ -90,13 +89,20 @@ type Mutation {
   updatePassword(userId: String!, newPassword: String!): Boolean!
   removeUser(id: String!): Boolean!
   SendNotification(FcmToken: String!, Title: String!, Body: String!): String!
-  Register(data: RegisterDto!): String!
-  login(data: LoginDto!): User!
 
-  """Send verification email to user"""
-  sendVerificationEmail(email: String!): Boolean!
-  verifyEmail(otp: String!): Boolean!
-  forgetPassword(email: String!): String!
+  """Register a new user"""
+  register(data: RegisterDto!): String!
+
+  """Verify email with OTP"""
+  verifyOtp(email: String!, otp: String!): Boolean!
+
+  """Login and return JWT token"""
+  login(data: LoginDto!): String!
+
+  """Send reset password link"""
+  sendResetPasswordLink(email: String!): String!
+
+  """Reset password using token"""
   resetPassword(token: String!, newPassword: String!): String!
   createPartner(createPartnerInput: CreatePartnerInput!): Partner!
   updatePartner(id: String!, updatePartnerInput: CreatePartnerInput!): Partner!

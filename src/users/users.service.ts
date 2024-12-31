@@ -10,11 +10,12 @@ export class UsersService {
   findById(id: any) {
     throw new Error('Method not implemented.');
   }
-
-
   constructor(@InjectRepository(User)
     private readonly userRepository: Repository<User>,){}
 
+
+
+    
 
     async createUser(data: { name: string; email: string; password: string }): Promise<User> {
       const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -31,20 +32,7 @@ export class UsersService {
     }
 
 
-    async validateUser(email: string, password: string): Promise<User> {
-      const user = await this.findByEmail(email);
-      if (!user) {
-        throw new UnauthorizedException('Invalid email or password');
-      }
-  
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid) {
-        throw new UnauthorizedException('Invalid email or password');
-      }
-  
-      return user;
-    }
-
+   
 
     async updatePassword(userId: string, newPassword: string): Promise<User> {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -63,12 +51,12 @@ export class UsersService {
  
   }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const { name, email, password, role } = createUserDto;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = this.userRepository.create({ name, email, password: hashedPassword, role });
-    return this.userRepository.save(user);
-  }
+  // async create(createUserDto: CreateUserDto): Promise<User> {
+  //   const { name, email, password, role } = createUserDto;
+  //   const hashedPassword = await bcrypt.hash(password, 10);
+  //   const user = this.userRepository.create({ name, email, password: hashedPassword, role });
+  //   return this.userRepository.save(user);
+  // }
 
 
   async update(id: string, UpdateUserDto): Promise<User> {

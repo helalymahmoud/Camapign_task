@@ -36,6 +36,21 @@ export class User {
 
   @ManyToMany(()=>Ad,(ads)=>ads.users)
     ads:Ad [];
+
+  @Column({ nullable: true })
+  otp: string; 
+
+  @Column({ type: 'timestamp', nullable: true })
+  otpExpiresAt: Date; 
+  
+
+  @Column({nullable:true})
+  resetPasswordToken:string
+
+
+  @Column({ type: 'timestamp', nullable: true })
+  resetPasswordExpiresAt: Date;
+
 }
 
 

@@ -2,7 +2,6 @@ import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-// import { LoginResponse } from './dto/login-response';
 import { UseGuards } from '@nestjs/common';
 import { User } from 'src/users/entities/user.entity';
 @Resolver()
@@ -11,62 +10,46 @@ export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
 
-  @Mutation(() => String)
-  async Register(@Args('data') registerDto: RegisterDto): Promise<string> {
-    return this.authService.register(registerDto);
-  }
-
-  @Mutation(() => User) // You can change the return type to a custom response object if needed
-  async login(@Args('data') loginDto: LoginDto): Promise<User> {
-    return this.authService.login(loginDto);
-  }
-
-
-  @Mutation(() => Boolean, { description: 'Send verification email to user' })
-async sendVerificationEmail(@Args('email') email: string): Promise<boolean> {
-  return this.authService.sendVerificationEmail(email);
+  @Mutation(() => String, { description: 'Register a new user' })
+  async register(@Args('data') registerDto: RegisterDto): Promise<string> {
+  const { message } = await this.authService.register(registerDto);
+  return message ;
 }
 
 
-  @Mutation(() => Boolean)
-    async verifyEmail(@Args('otp') otp: string): Promise<boolean> {
-      return await this.verificationService.verifyEmail(otp);
-    } 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  @Mutation(() => String)
-  async forgetPassword(@Args('email') email: string): Promise<string> {
-    return this.authService.HandleForgetPassword(email);
+  @Mutation(() => Boolean, { description: 'Verify email with OTP' })
+  async verifyOtp(
+    @Args('email') email: string,
+    @Args('otp') otp: string,
+  ): Promise<boolean> {
+    return this.authService.verifyOtp(email, otp);
   }
 
-  @Mutation(() => String)
-  async resetPassword(
-    @Args('token') token: string,
-    @Args('newPassword') newPassword: string,
-  ): Promise<string> {
-    return this.authService.HandleResetPassword(token, newPassword);
+
+  
+  @Mutation(() => String, { description: 'Login and return JWT token' })
+  async login(@Args('data') loginDto: LoginDto): Promise<string> {
+    const { token } = await this.authService.login(loginDto);
+    return token;
   }
+
+ 
+@Mutation(() => String, { description: 'Send reset password link' })
+async sendResetPasswordLink(@Args('email') email: string): Promise<string> {
+  const response = await this.authService.sendResetPasswordLink(email);
+  return response.message;
+}
+
+@Mutation(() => String, { description: 'Reset password using token' })
+async resetPassword(
+  @Args('token') token: string,
+  @Args('newPassword') newPassword: string,
+): Promise<string> {
+  const response = await this.authService.resetPassword(token, newPassword);
+  return response.message;
+}
+
 
 
 }
