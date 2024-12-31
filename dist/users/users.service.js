@@ -36,17 +36,6 @@ let UsersService = class UsersService {
     async findByEmail(email) {
         return await this.userRepository.findOne({ where: { email } });
     }
-    async validateUser(email, password) {
-        const user = await this.findByEmail(email);
-        if (!user) {
-            throw new common_1.UnauthorizedException('Invalid email or password');
-        }
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            throw new common_1.UnauthorizedException('Invalid email or password');
-        }
-        return user;
-    }
     async updatePassword(userId, newPassword) {
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         await this.userRepository.update(userId, { password: hashedPassword });
@@ -57,12 +46,6 @@ let UsersService = class UsersService {
     }
     async findOne(id) {
         return this.userRepository.findOne({ where: { id }, relations: ['joinedCampaigns'] });
-    }
-    async create(createUserDto) {
-        const { name, email, password, role } = createUserDto;
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = this.userRepository.create({ name, email, password: hashedPassword, role });
-        return this.userRepository.save(user);
     }
     async update(id, UpdateUserDto) {
         await this.userRepository.update(id, UpdateUserDto);

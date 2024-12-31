@@ -17,68 +17,62 @@ const graphql_1 = require("@nestjs/graphql");
 const auth_service_1 = require("./auth.service");
 const login_dto_1 = require("./dto/login.dto");
 const register_dto_1 = require("./dto/register.dto");
-const user_entity_1 = require("../users/entities/user.entity");
 let AuthResolver = class AuthResolver {
     constructor(authService) {
         this.authService = authService;
     }
-    async Register(registerDto) {
-        return this.authService.register(registerDto);
+    async register(registerDto) {
+        const { message } = await this.authService.register(registerDto);
+        return message;
+    }
+    async verifyOtp(email, otp) {
+        return this.authService.verifyOtp(email, otp);
     }
     async login(loginDto) {
-        return this.authService.login(loginDto);
+        const { token } = await this.authService.login(loginDto);
+        return token;
     }
-    async sendVerificationEmail(email) {
-        return this.authService.sendVerificationEmail(email);
-    }
-    async verifyEmail(otp) {
-        return await this.verificationService.verifyEmail(otp);
-    }
-    async forgetPassword(email) {
-        return this.authService.HandleForgetPassword(email);
+    async sendResetPasswordLink(email) {
+        const response = await this.authService.sendResetPasswordLink(email);
+        return response.message;
     }
     async resetPassword(token, newPassword) {
-        return this.authService.HandleResetPassword(token, newPassword);
+        const response = await this.authService.resetPassword(token, newPassword);
+        return response.message;
     }
 };
 exports.AuthResolver = AuthResolver;
 __decorate([
-    (0, graphql_1.Mutation)(() => String),
+    (0, graphql_1.Mutation)(() => String, { description: 'Register a new user' }),
     __param(0, (0, graphql_1.Args)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [register_dto_1.RegisterDto]),
     __metadata("design:returntype", Promise)
-], AuthResolver.prototype, "Register", null);
+], AuthResolver.prototype, "register", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => user_entity_1.User),
+    (0, graphql_1.Mutation)(() => Boolean, { description: 'Verify email with OTP' }),
+    __param(0, (0, graphql_1.Args)('email')),
+    __param(1, (0, graphql_1.Args)('otp')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], AuthResolver.prototype, "verifyOtp", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => String, { description: 'Login and return JWT token' }),
     __param(0, (0, graphql_1.Args)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [login_dto_1.LoginDto]),
     __metadata("design:returntype", Promise)
 ], AuthResolver.prototype, "login", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => Boolean, { description: 'Send verification email to user' }),
+    (0, graphql_1.Mutation)(() => String, { description: 'Send reset password link' }),
     __param(0, (0, graphql_1.Args)('email')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], AuthResolver.prototype, "sendVerificationEmail", null);
+], AuthResolver.prototype, "sendResetPasswordLink", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => Boolean),
-    __param(0, (0, graphql_1.Args)('otp')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], AuthResolver.prototype, "verifyEmail", null);
-__decorate([
-    (0, graphql_1.Mutation)(() => String),
-    __param(0, (0, graphql_1.Args)('email')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], AuthResolver.prototype, "forgetPassword", null);
-__decorate([
-    (0, graphql_1.Mutation)(() => String),
+    (0, graphql_1.Mutation)(() => String, { description: 'Reset password using token' }),
     __param(0, (0, graphql_1.Args)('token')),
     __param(1, (0, graphql_1.Args)('newPassword')),
     __metadata("design:type", Function),

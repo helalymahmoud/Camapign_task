@@ -7,6 +7,9 @@ async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     const configSevice = app.get(config_1.ConfigService);
     const port = configSevice.get("APP_PORT");
+    app.enableCors({
+        origin: "http://localhost:3001"
+    });
     await app.listen(port);
 }
 bootstrap();

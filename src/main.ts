@@ -9,6 +9,9 @@ async function bootstrap() {
 
   const configSevice =app.get(ConfigService);
   const port =configSevice.get<number>("APP_PORT")
+  app.enableCors({
+    origin:"http://localhost:3001"
+  })
   await app.listen(port);
 }
 bootstrap();

@@ -11,4 +11,8 @@ export declare class User {
     joinedCampaigns: Campaign[];
     tickets: any;
     ads: Ad[];
+    otp: string;
+    otpExpiresAt: Date;
+    resetPasswordToken: string;
+    resetPasswordExpiresAt: Date;
 }

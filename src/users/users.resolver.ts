@@ -14,7 +14,7 @@ export class UsersResolver {
 
   @Query(() => [User])
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('Admin') 
+  @Roles('user') 
   async Users(): Promise<User[]> {
   const users =await this.usersService.findAll();
   return users || []
@@ -30,26 +30,11 @@ export class UsersResolver {
     return this.usersService.findOne(id);
   }
 
-  @Query(() => User, { nullable: true })
-  async validateUser(
-    @Args('email') email: string,
-    @Args('password') password: string,
-  ): Promise<User> {
-    return await this.usersService.validateUser(email, password);
-  }
-
-
-  // @Mutation(() => User)
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('Admin') 
-  // async createUser(
-  //   @Args('createUserDto') createUserDto: CreateUserDto): Promise<User> {
-  //   return this.usersService.create(createUserDto);
-  // }
-
+ 
+ 
  @Mutation(() => User)
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('Admin') 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('Admin') 
   async createUser(
     @Args('name') name: string,
     @Args('email') email: string,
@@ -59,8 +44,8 @@ export class UsersResolver {
   }
 
   @Mutation(() => User)
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('Admin') 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('Admin') 
   async updateUser(
     @Args('id') id: string,
     @Args('updateUserDto') updateUserDto:UpdateUserDto): Promise<User> {
@@ -69,7 +54,8 @@ export class UsersResolver {
 
  
   @Mutation(() => Boolean)
-  // @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('Admin','user') 
     async updatePassword(
       @Args('userId') userId: string,
       @Args('newPassword') newPassword: string,
@@ -79,8 +65,8 @@ export class UsersResolver {
   }
 
   @Mutation(() => Boolean)
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles('Admin') 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('Admin') 
   async removeUser(
     @Args('id') id: string): Promise<boolean> {
     await this.usersService.remove(id);

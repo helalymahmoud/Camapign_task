@@ -1,14 +1,13 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/entities/user.entity';
-// import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { MailerService } from '@nestjs-modules/mailer';
 import { MailService } from 'src/mailer/mail.service';
+import { randomBytes } from 'crypto';
 @Injectable()
 export class AuthService {
   mailService: any;
@@ -17,130 +16,125 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     @InjectRepository(User)
-     private readonly userRepository: Repository<User>, 
+     private readonly userRepository: Repository<User>,       
      private readonly mailerService: MailService,
   ){}
 
+async register(registerDto: RegisterDto): Promise<{ message: string }> {
+  const { name, email, password } = registerDto;
 
-  async register(registerDto: RegisterDto): Promise<string> {
-    const { name, email, password } = registerDto;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = this.userRepository.create({ 
-      name,
-      email,
-      password: hashedPassword,
-      role: 'User', 
-    });
-    await this.userRepository.save(user);
-    this.sendVerificationEmail(email)
-    return this.jwtService.sign({ sub: user.id, email: user.email, role: user.role });
+  const existingUser = await this.userRepository.findOne({ where: { email } });
+  if (existingUser) {
+    throw new ConflictException('Email already in use');
   }
 
+  const hashedPassword = await bcrypt.hash(password, 10);
 
-  public async login (loginDto:LoginDto){
-    const {email,password}=loginDto;
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const otpExpiresAt = new Date();
+  otpExpiresAt.setMinutes(otpExpiresAt.getMinutes() + 10); 
+  const user = this.userRepository.create({
+    name,
+    email,
+    password: hashedPassword,
+    role: 'User',
+    otp,
+    otpExpiresAt,
+  });
+  await this.userRepository.save(user);
 
-    const user =await this.userRepository.findOne({where:{email}});
-    if(!user) throw new BadRequestException('invalid email or paasword');
+  const subject = 'Verify Your Email';
+  const text = `Your verification OTP is: ${otp}`;
+  const html = `<p>Your verification OTP is:</p><h3>${otp}</h3><p>This OTP is valid for 10 minutes.</p>`;
+  await this.mailerService.sendMail(email, subject, text, html);
 
-    const isPasswordMatch =await bcrypt.compare(password,user.password);
-    if(!password) throw new BadRequestException('invalid email or paasword');
+  return {
+    message: 'Registration successful. Please verify your email using the OTP sent to your email address.',
+  }}
 
-    return user
 
+
+async verifyOtp(email: string, otp: string): Promise<boolean> {
+  const user = await this.userRepository.findOne({ where: { email } });
+
+  if (!user) {
+    throw new NotFoundException('User not found');
   }
-  
-    
 
-  async sendVerificationEmail(email: string): Promise<boolean> {
+  if (!user.otp || user.otp !== otp) {
+    throw new BadRequestException('Invalid or expired OTP');
+  }
+
+  if (user.otpExpiresAt < new Date()) {
+    throw new BadRequestException('OTP has expired');
+  }
+
+  user.otp = null;
+  user.otpExpiresAt = null;
+  await this.userRepository.save(user);
+
+  return true;
+}
+
+
+
+public async login(loginDto: LoginDto): Promise<{ token: string }> {
+  const { email, password } = loginDto;
+
+  const user = await this.userRepository.findOne({ where: { email } });
+  if (!user) {
+    throw new BadRequestException('Invalid email or password');
+  }
+
+  const isPasswordMatch = await bcrypt.compare(password, user.password);
+  if (!isPasswordMatch) {
+    throw new BadRequestException('Invalid email or password');
+  }
+
+  const payload = { sub: user.id, email: user.email, role: user.role }; // Customize the payload as needed
+  const token = this.jwtService.sign(payload);
+
+  return { token };
+}
+
+
+
+  public async sendResetPasswordLink(email: string): Promise<{ message: string }> {
     const user = await this.userRepository.findOne({ where: { email } });
-    if (!user) {
-      throw new BadRequestException('User not found');
-    }
+    if (!user) throw new BadRequestException('User with given email does not exist');
 
-    const verificationToken = uuidv4();
-    user.verificationToken = verificationToken;
+    user.resetPasswordToken = randomBytes(32).toString('hex');
+    user.resetPasswordExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes expiration
 
     await this.userRepository.save(user);
 
-    await this.mailService.sendMail({
-      to: user.email,
-      subject: 'Verify Your Email',
-      html: `<h1>Hello ${user.name}</h1><p>Verify your email using the token: ${verificationToken}</p>`,
-    } as any);
-    return true;
-    
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-  async HandleForgetPassword (email: string): Promise<string> {
-    const user = await this.userService.findByEmail(email);
-    if (!user) {
-      throw new Error('User not found');
-    }
-    const token = this.jwtService.sign(
-      { id: user.id },
-      { expiresIn: '1h' } 
+    const resetPasswordLink = `http://localhost:3001/reset-password/${user.resetPasswordToken}`;
+    await this.mailerService.sendMail(
+      email,
+      'Reset Your Password',
+      `Reset your password using this link: ${resetPasswordLink}`,
+      `<p>Reset your password using this link:</p><a href="${resetPasswordLink}">Reset Password</a>`,
     );
-    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
-    await this.mailService.sendMail({
-      to: email,
-      subject: 'Reset Password',
-      text: `Click this link to reset your password: ${resetLink}`,
-    });
-    return 'Password reset link has been sent to your email';
+
+    return { message: 'Password reset link sent to your email, please check your inbox' };
   }
 
 
 
-
-
-
-  async HandleResetPassword(token: string, newPassword: string): Promise<string> {
-    try {
-      const payload = this.jwtService.verify(token);
-      const user = await this.userService.findById(payload.id);
-      if (!user) {
-        throw new Error('Invalid token');
-      }
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      await this.userService.updatePassword(user.id, hashedPassword);
-      return 'Password has been reset successfully';
-    } catch (error) {
-      throw new Error('Invalid or expired token');
+  public async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+    const user = await this.userRepository.findOne({ where: { resetPasswordToken: token } });
+    if (!user || user.resetPasswordExpiresAt < new Date()) {
+      throw new BadRequestException('Invalid or expired reset token');
     }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    user.resetPasswordToken = null; // Clear the reset token
+    user.resetPasswordExpiresAt = null;
+
+    await this.userRepository.save(user);
+
+    return { message: 'Password successfully reset' };
   }
-
 }
 
-function uuidv4() {
-  throw new Error('Function not implemented.');
-}
      
