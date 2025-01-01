@@ -90,8 +90,8 @@ constructor(@InjectRepository(Campaign)
   
 async findAll(pageMumber?:number,reviewPrePage?:number):Promise<Campaign[]>{
   return this.campaignRepository.find({
-    skip:18, 
-    take:3
+    skip:0, 
+    take:0
   });
  }
   

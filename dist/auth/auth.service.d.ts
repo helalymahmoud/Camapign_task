@@ -5,13 +5,13 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { MailService } from 'src/mailer/mail.service';
 export declare class AuthService {
-    private readonly jwtService;
     private readonly userRepository;
     private readonly mailerService;
+    private readonly jwtService;
     mailService: any;
     userService: any;
     users: any;
-    constructor(jwtService: JwtService, userRepository: Repository<User>, mailerService: MailService);
+    constructor(userRepository: Repository<User>, mailerService: MailService, jwtService: JwtService);
     register(registerDto: RegisterDto): Promise<{
         message: string;
     }>;

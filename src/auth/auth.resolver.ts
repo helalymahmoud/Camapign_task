@@ -47,6 +47,7 @@ async resetPassword(
   @Args('newPassword') newPassword: string,
 ): Promise<string> {
   const response = await this.authService.resetPassword(token, newPassword);
+  
   return response.message;
 }
 

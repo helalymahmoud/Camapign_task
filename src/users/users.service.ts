@@ -49,7 +49,7 @@ export class UsersService {
   async findOne(id: string): Promise<User> {
     return this.userRepository.findOne({ where: { id }, relations: ['joinedCampaigns'] });
  
-  }
+  } 
 
   // async create(createUserDto: CreateUserDto): Promise<User> {
   //   const { name, email, password, role } = createUserDto;

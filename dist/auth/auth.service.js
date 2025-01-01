@@ -22,10 +22,10 @@ const user_entity_1 = require("../users/entities/user.entity");
 const mail_service_1 = require("../mailer/mail.service");
 const crypto_1 = require("crypto");
 let AuthService = class AuthService {
-    constructor(jwtService, userRepository, mailerService) {
-        this.jwtService = jwtService;
+    constructor(userRepository, mailerService, jwtService) {
         this.userRepository = userRepository;
         this.mailerService = mailerService;
+        this.jwtService = jwtService;
     }
     async register(registerDto) {
         const { name, email, password } = registerDto;
@@ -110,9 +110,9 @@ let AuthService = class AuthService {
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
-    __metadata("design:paramtypes", [jwt_1.JwtService,
-        typeorm_2.Repository,
-        mail_service_1.MailService])
+    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        mail_service_1.MailService,
+        jwt_1.JwtService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

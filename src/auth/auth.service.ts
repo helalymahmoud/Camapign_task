@@ -14,10 +14,11 @@ export class AuthService {
   userService: any;
  users: any;
   constructor(
-    private readonly jwtService: JwtService,
     @InjectRepository(User)
      private readonly userRepository: Repository<User>,       
      private readonly mailerService: MailService,
+     private readonly jwtService: JwtService,
+
   ){}
 
 async register(registerDto: RegisterDto): Promise<{ message: string }> {
@@ -91,7 +92,7 @@ public async login(loginDto: LoginDto): Promise<{ token: string }> {
     throw new BadRequestException('Invalid email or password');
   }
 
-  const payload = { sub: user.id, email: user.email, role: user.role }; // Customize the payload as needed
+  const payload = { sub: user.id, email: user.email, role: user.role }; 
   const token = this.jwtService.sign(payload);
 
   return { token };
@@ -128,13 +129,14 @@ public async login(loginDto: LoginDto): Promise<{ token: string }> {
     }
 
     user.password = await bcrypt.hash(newPassword, 10);
-    user.resetPasswordToken = null; // Clear the reset token
+    user.resetPasswordToken = null; 
     user.resetPasswordExpiresAt = null;
 
     await this.userRepository.save(user);
 
     return { message: 'Password successfully reset' };
   }
+  
 }
 
      
