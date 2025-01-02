@@ -19,6 +19,9 @@ const typeorm_2 = require("typeorm");
 const user_entity_1 = require("./entities/user.entity");
 const bcrypt = require("bcrypt");
 let UsersService = class UsersService {
+    getUser(username) {
+        throw new Error('Method not implemented.');
+    }
     findById(id) {
         throw new Error('Method not implemented.');
     }

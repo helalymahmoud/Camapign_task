@@ -11,6 +11,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { UsersModule } from 'src/users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { MailService } from 'src/mailer/mail.service';
+import { GqlAuthGuard,  } from './guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { MailService } from 'src/mailer/mail.service';
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
       secret:  process.env.JWT_SECRET|| 'secretKey',
-      signOptions: { expiresIn: '1d' },
+      signOptions: { expiresIn: '1d' }, 
     }),
   ],
   providers: [
@@ -29,6 +30,7 @@ import { MailService } from 'src/mailer/mail.service';
      AuthResolver, 
      JwtStrategy,
       RolesGuard,
+      GqlAuthGuard  ,
       MailService],
   exports: [AuthService],
 })

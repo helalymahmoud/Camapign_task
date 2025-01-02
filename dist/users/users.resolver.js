@@ -18,9 +18,9 @@ const users_service_1 = require("./users.service");
 const user_entity_1 = require("./entities/user.entity");
 const update_user_dto_1 = require("./dto/update-user.dto");
 const common_1 = require("@nestjs/common");
-const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const roles_decorator_1 = require("../auth/decorators/roles.decorator");
-const roles_guard_1 = require("../auth/guards/roles.guard");
+const jwt_strategy_1 = require("../auth/jwt.strategy");
+const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let UsersResolver = class UsersResolver {
     constructor(usersService) {
         this.usersService = usersService;
@@ -50,16 +50,14 @@ let UsersResolver = class UsersResolver {
 exports.UsersResolver = UsersResolver;
 __decorate([
     (0, graphql_1.Query)(() => [user_entity_1.User]),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)('user'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "Users", null);
 __decorate([
     (0, graphql_1.Query)(() => user_entity_1.User),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)('user'),
+    (0, common_1.UseGuards)(jwt_strategy_1.JwtStrategy),
+    (0, roles_decorator_1.Roles)('user', 'admin'),
     __param(0, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -67,7 +65,7 @@ __decorate([
 ], UsersResolver.prototype, "User", null);
 __decorate([
     (0, graphql_1.Mutation)(() => user_entity_1.User),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.GqlAuthGuard),
     (0, roles_decorator_1.Roles)('Admin'),
     __param(0, (0, graphql_1.Args)('name')),
     __param(1, (0, graphql_1.Args)('email')),
@@ -78,7 +76,7 @@ __decorate([
 ], UsersResolver.prototype, "createUser", null);
 __decorate([
     (0, graphql_1.Mutation)(() => user_entity_1.User),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, common_1.UseGuards)(jwt_strategy_1.JwtStrategy),
     (0, roles_decorator_1.Roles)('Admin'),
     __param(0, (0, graphql_1.Args)('id')),
     __param(1, (0, graphql_1.Args)('updateUserDto')),
@@ -88,8 +86,8 @@ __decorate([
 ], UsersResolver.prototype, "updateUser", null);
 __decorate([
     (0, graphql_1.Mutation)(() => Boolean),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)('Admin', 'user'),
+    (0, common_1.UseGuards)(jwt_strategy_1.JwtStrategy),
+    (0, roles_decorator_1.Roles)("admin", "user"),
     __param(0, (0, graphql_1.Args)('userId')),
     __param(1, (0, graphql_1.Args)('newPassword')),
     __metadata("design:type", Function),
@@ -98,7 +96,7 @@ __decorate([
 ], UsersResolver.prototype, "updatePassword", null);
 __decorate([
     (0, graphql_1.Mutation)(() => Boolean),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
+    (0, common_1.UseGuards)(jwt_strategy_1.JwtStrategy),
     (0, roles_decorator_1.Roles)('Admin'),
     __param(0, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
@@ -109,7 +107,4 @@ exports.UsersResolver = UsersResolver = __decorate([
     (0, graphql_1.Resolver)(() => user_entity_1.User),
     __metadata("design:paramtypes", [users_service_1.UsersService])
 ], UsersResolver);
-function CurrentUser() {
-    throw new Error('Function not implemented.');
-}
 //# sourceMappingURL=users.resolver.js.map

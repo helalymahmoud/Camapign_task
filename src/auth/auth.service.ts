@@ -10,6 +10,9 @@ import { MailService } from 'src/mailer/mail.service';
 import { randomBytes } from 'crypto';
 @Injectable()
 export class AuthService {
+    authenticate(token: string): any {
+        throw new Error('Method not implemented.');
+    }
   mailService: any;
   userService: any;
  users: any;
@@ -99,13 +102,12 @@ public async login(loginDto: LoginDto): Promise<{ token: string }> {
 }
 
 
-
   public async sendResetPasswordLink(email: string): Promise<{ message: string }> {
     const user = await this.userRepository.findOne({ where: { email } });
     if (!user) throw new BadRequestException('User with given email does not exist');
 
     user.resetPasswordToken = randomBytes(32).toString('hex');
-    user.resetPasswordExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes expiration
+    user.resetPasswordExpiresAt = new Date(Date.now() + 15 * 60 * 1000); 
 
     await this.userRepository.save(user);
 
@@ -139,4 +141,3 @@ public async login(loginDto: LoginDto): Promise<{ token: string }> {
   
 }
 
-     

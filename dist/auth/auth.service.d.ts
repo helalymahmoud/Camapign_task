@@ -8,6 +8,7 @@ export declare class AuthService {
     private readonly userRepository;
     private readonly mailerService;
     private readonly jwtService;
+    authenticate(token: string): any;
     mailService: any;
     userService: any;
     users: any;

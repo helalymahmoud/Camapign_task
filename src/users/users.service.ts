@@ -7,6 +7,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 import * as jwt from 'jsonwebtoken'
 @Injectable()
 export class UsersService {
+  getUser(username: any): User | PromiseLike<User> {
+    throw new Error('Method not implemented.');
+  }
   findById(id: any) {
     throw new Error('Method not implemented.');
   }

@@ -22,6 +22,9 @@ const user_entity_1 = require("../users/entities/user.entity");
 const mail_service_1 = require("../mailer/mail.service");
 const crypto_1 = require("crypto");
 let AuthService = class AuthService {
+    authenticate(token) {
+        throw new Error('Method not implemented.');
+    }
     constructor(userRepository, mailerService, jwtService) {
         this.userRepository = userRepository;
         this.mailerService = mailerService;

@@ -2,6 +2,7 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 export declare class UsersService {
     private readonly userRepository;
+    getUser(username: any): User | PromiseLike<User>;
     findById(id: any): void;
     constructor(userRepository: Repository<User>);
     createUser(data: {

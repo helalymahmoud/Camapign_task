@@ -3,36 +3,35 @@ import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { JwtStrategy } from 'src/auth/jwt.strategy';
+import { GqlAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
-@Resolver(() => User)
-export class UsersResolver {
-  constructor(private readonly usersService: UsersService) {}
-
+  @Resolver(() => User)
+  export class UsersResolver {
+    constructor(private readonly usersService: UsersService
+              
+  ) {}
+  // @UseGuards(GqlAuthGuard)  
+  // @Roles('admin')
   @Query(() => [User])
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('user') 
   async Users(): Promise<User[]> {
   const users =await this.usersService.findAll();
   return users || []
   }
   
 
- 
   @Query(() => User)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('user') 
+  @UseGuards(JwtStrategy)
+  @Roles('user','admin') 
   async User(
     @Args('id') id: string): Promise<User> {
     return this.usersService.findOne(id);
   }
 
- 
- 
  @Mutation(() => User)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(GqlAuthGuard)
   @Roles('Admin') 
   async createUser(
     @Args('name') name: string,
@@ -43,7 +42,7 @@ export class UsersResolver {
   }
 
   @Mutation(() => User)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtStrategy)
   @Roles('Admin') 
   async updateUser(
     @Args('id') id: string,
@@ -53,8 +52,8 @@ export class UsersResolver {
 
  
   @Mutation(() => Boolean)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('Admin','user') 
+  @UseGuards(JwtStrategy)
+  @Roles("admin","user")  
     async updatePassword(
       @Args('userId') userId: string,
       @Args('newPassword') newPassword: string,
@@ -64,7 +63,7 @@ export class UsersResolver {
   }
 
   @Mutation(() => Boolean)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtStrategy)
   @Roles('Admin') 
   async removeUser(
     @Args('id') id: string): Promise<boolean> {
@@ -72,8 +71,6 @@ export class UsersResolver {
     return true;
   }
 
-}
-function CurrentUser(): (target: UsersResolver, propertyKey: "Users", parameterIndex: 0) => void {
-  throw new Error('Function not implemented.');
-}
+  }
+  
 
