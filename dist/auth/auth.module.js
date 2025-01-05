@@ -13,7 +13,6 @@ const auth_service_1 = require("./auth.service");
 const auth_resolver_1 = require("./auth.resolver");
 const jwt_1 = require("@nestjs/jwt");
 const jwt_strategy_1 = require("./jwt.strategy");
-const roles_guard_1 = require("./guards/roles.guard");
 const user_entity_1 = require("../users/entities/user.entity");
 const config_1 = require("@nestjs/config");
 const mailer_1 = require("@nestjs-modules/mailer");
@@ -21,6 +20,7 @@ const users_module_1 = require("../users/users.module");
 const passport_1 = require("@nestjs/passport");
 const mail_service_1 = require("../mailer/mail.service");
 const jwt_auth_guard_1 = require("./guards/jwt-auth.guard");
+const role_guard_1 = require("./guards/role.guard");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -41,7 +41,7 @@ exports.AuthModule = AuthModule = __decorate([
             auth_service_1.AuthService,
             auth_resolver_1.AuthResolver,
             jwt_strategy_1.JwtStrategy,
-            roles_guard_1.RolesGuard,
+            role_guard_1.RolesGuard,
             jwt_auth_guard_1.GqlAuthGuard,
             mail_service_1.MailService
         ],

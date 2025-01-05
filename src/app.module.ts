@@ -3,9 +3,9 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { AppService } from './app.service';
-import {  CampaignModule} from './campaigns/campaigns.module';
+import { CampaignModule } from './campaigns/campaigns.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import {  typeOrmConfigAsync } from './config/typeorm.config';
+import { typeOrmConfigAsync } from './config/typeorm.config';
 import { UsersModule } from './users/users.module';
 import { Ad } from './ads/entities/ads.entity';
 import { Campaign } from './campaigns/entities/campaign.entity';
@@ -30,76 +30,61 @@ import { MailerModule } from '@nestjs-modules/mailer';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal:true,
+      isGlobal: true,
     }),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-     imports:[DataloaderModule,
-      BullModule.forRoot({
-        connection: {
-          host: 'localhost',
-          port: 6379,
-        },
+      imports: [
+        DataloaderModule,
+        BullModule.forRoot({
+          connection: {
+            host: 'localhost',
+            port: 6379,
+          },
+        }),
+      ],
+      useFactory: (dataloaderService: DataloaderService) => ({
+        autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+        playground: true,
+        context: async ({ req, res }) => ({
+          loaders: dataloaderService.getLoaders(),
+          req,
+          res,
+        }),
+        formatError: (err) => ({
+          message: err.message,
+          status: err.extensions.code,
+          timestamp: new Date().toISOString(),
+        }),
       }),
-     ],
-     useFactory: (DataloaderService: DataloaderService) => {
-      return {
-
-        
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      // debug:true,
-      playground: true,
-      context: async({req,res,}) =>{ 
-        return {
-        loaders: DataloaderService.getLoaders(),
-        req,
-        res
-        
-      }
-    },
-      
-
-      formatError: (err) => ({ 
-        message: err.message,
-        status: err.extensions.code,
-        timestamp:new Date().toISOString(), 
-         
-      }
-    )
-    };
-
-  },
-  inject:[DataloaderService]
-      
+      inject: [DataloaderService],
     }),
-    
     TypeOrmModule.forRootAsync(typeOrmConfigAsync),
     CampaignModule,
     UsersModule,
     TypeOrmModule.forFeature([
       Campaign,
-       Ad,
-       Partner,
-       User,
-       Ticket,
-       AdInteraction,]),
-       NotificationModule,
-       AuthModule,
-       AdModule,
-       PartnerModule,
-       TicketModule,
-       DataloaderModule,
-       QueueModule,
-       MailerModule,
+      Ad,
+      Partner,
+      User,
+      Ticket,
+      AdInteraction,
+    ]),
+    NotificationModule,
+    AuthModule,
+    AdModule,
+    PartnerModule,
+    TicketModule,
+    DataloaderModule,
+    QueueModule,
+    MailerModule,
   ],
-  providers:[AppService, 
-     {
-    provide: APP_FILTER,
-    useClass: GraphQLExceptisonFilter,   
-  },]
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: GraphQLExceptisonFilter,
+    },
+  ],
 })
 export class AppModule {}
-function v4() {
-  throw new Error('Function not implemented.');
-}
-

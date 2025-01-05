@@ -101,7 +101,6 @@ public async login(loginDto: LoginDto): Promise<{ token: string }> {
   return { token };
 }
 
-
   public async sendResetPasswordLink(email: string): Promise<{ message: string }> {
     const user = await this.userRepository.findOne({ where: { email } });
     if (!user) throw new BadRequestException('User with given email does not exist');
@@ -111,8 +110,8 @@ public async login(loginDto: LoginDto): Promise<{ token: string }> {
 
     await this.userRepository.save(user);
 
-    const resetPasswordLink = `http://localhost:3001/reset-password/${user.resetPasswordToken}`;
-    await this.mailerService.sendMail(
+      const resetPasswordLink = `http://localhost:3001/reset-password/${user.resetPasswordToken}`;
+      await this.mailerService.sendMail(
       email,
       'Reset Your Password',
       `Reset your password using this link: ${resetPasswordLink}`,

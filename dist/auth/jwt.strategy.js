@@ -16,22 +16,35 @@ const passport_1 = require("@nestjs/passport");
 const passport_jwt_1 = require("passport-jwt");
 const users_service_1 = require("../users/users.service");
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
-    constructor(usersesrvice, configservice) {
+    constructor(usersService, configService) {
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: process.env.JWT_SECRET || 'secretKey',
+            secretOrKey: configService.get('JWT_SECRET') || 'secretKey',
         });
-        this.usersesrvice = usersesrvice;
-        this.configservice = configservice;
+        this.usersService = usersService;
+        this.configService = configService;
     }
     async validate(payload) {
-        const { username } = payload;
-        const user = await this.usersesrvice.getUser(username);
-        if (!user) {
-            throw new common_1.UnauthorizedException();
+        console.log('Token Payload:', JSON.stringify(payload, null, 2));
+        if (!payload || !payload.sub || !payload.email) {
+            throw new common_1.UnauthorizedException('Invalid token payload');
         }
-        return user;
+        const user = await this.usersService.findOne(payload.sub);
+        if (!user) {
+            throw new common_1.UnauthorizedException('User not found');
+        }
+        if (user.email !== payload.email) {
+            throw new common_1.UnauthorizedException('email does not match');
+        }
+        if (user.isBanned) {
+            throw new common_1.UnauthorizedException('User is banned');
+        }
+        return {
+            id: user.id,
+            email: user.email,
+            roles: user.roles,
+        };
     }
 };
 exports.JwtStrategy = JwtStrategy;

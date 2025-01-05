@@ -4,10 +4,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export declare class UsersResolver {
     private readonly usersService;
     constructor(usersService: UsersService);
-    Users(): Promise<User[]>;
-    User(id: string): Promise<User>;
-    createUser(name: string, email: string, password: string): Promise<User>;
-    updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User>;
-    updatePassword(userId: string, newPassword: string): Promise<boolean>;
-    removeUser(id: string): Promise<boolean>;
+    Users(_currentUser: User): Promise<User[]>;
+    User(_currentUser: User, id: string): Promise<User>;
+    createUser(_currentUser: User, name: string, email: string, password: string): Promise<User>;
+    updateUser(_CurrentUser: User, id: string, updateUserDto: UpdateUserDto): Promise<User>;
+    updatePassword(_CurrentUser: User, userId: string, newPassword: string): Promise<boolean>;
+    removeUser(_CurrentUser: User, id: string): Promise<boolean>;
 }

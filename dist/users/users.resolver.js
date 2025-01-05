@@ -21,86 +21,100 @@ const common_1 = require("@nestjs/common");
 const roles_decorator_1 = require("../auth/decorators/roles.decorator");
 const jwt_strategy_1 = require("../auth/jwt.strategy");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const current_user_decorator_1 = require("../auth/decorators/current-user.decorator");
+const role_enum_1 = require("../auth/role.enum");
+const role_guard_1 = require("../auth/guards/role.guard");
 let UsersResolver = class UsersResolver {
     constructor(usersService) {
         this.usersService = usersService;
     }
-    async Users() {
+    async Users(_currentUser) {
         const users = await this.usersService.findAll();
         return users || [];
     }
-    async User(id) {
+    async User(_currentUser, id) {
         return this.usersService.findOne(id);
     }
-    async createUser(name, email, password) {
-        return await this.usersService.createUser({ name, email, password });
+    async createUser(_currentUser, name, email, password) {
+        if (_currentUser.roles.includes('admin')) {
+            return await this.usersService.createUser({ name, email, password });
+        }
+        throw new Error('You do not have permission to create a user');
     }
-    async updateUser(id, updateUserDto) {
+    async updateUser(_CurrentUser, id, updateUserDto) {
         return this.usersService.update(id, updateUserDto);
     }
-    async updatePassword(userId, newPassword) {
+    async updatePassword(_CurrentUser, userId, newPassword) {
         await this.usersService.updatePassword(userId, newPassword);
         return true;
     }
-    async removeUser(id) {
+    async removeUser(_CurrentUser, id) {
         await this.usersService.remove(id);
         return true;
     }
 };
 exports.UsersResolver = UsersResolver;
 __decorate([
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.User),
     (0, graphql_1.Query)(() => [user_entity_1.User]),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.GqlAuthGuard),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [user_entity_1.User]),
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "Users", null);
 __decorate([
     (0, graphql_1.Query)(() => user_entity_1.User),
-    (0, common_1.UseGuards)(jwt_strategy_1.JwtStrategy),
-    (0, roles_decorator_1.Roles)('user', 'admin'),
-    __param(0, (0, graphql_1.Args)('id')),
+    (0, common_1.UseGuards)(role_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [user_entity_1.User, String]),
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "User", null);
 __decorate([
     (0, graphql_1.Mutation)(() => user_entity_1.User),
     (0, common_1.UseGuards)(jwt_auth_guard_1.GqlAuthGuard),
-    (0, roles_decorator_1.Roles)('Admin'),
-    __param(0, (0, graphql_1.Args)('name')),
-    __param(1, (0, graphql_1.Args)('email')),
-    __param(2, (0, graphql_1.Args)('password')),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, graphql_1.Args)('name')),
+    __param(2, (0, graphql_1.Args)('email')),
+    __param(3, (0, graphql_1.Args)('password')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [user_entity_1.User, String, String, String]),
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "createUser", null);
 __decorate([
     (0, graphql_1.Mutation)(() => user_entity_1.User),
     (0, common_1.UseGuards)(jwt_strategy_1.JwtStrategy),
-    (0, roles_decorator_1.Roles)('Admin'),
-    __param(0, (0, graphql_1.Args)('id')),
-    __param(1, (0, graphql_1.Args)('updateUserDto')),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, graphql_1.Args)('id')),
+    __param(2, (0, graphql_1.Args)('updateUserDto')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_user_dto_1.UpdateUserDto]),
+    __metadata("design:paramtypes", [user_entity_1.User, String, update_user_dto_1.UpdateUserDto]),
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "updateUser", null);
 __decorate([
     (0, graphql_1.Mutation)(() => Boolean),
     (0, common_1.UseGuards)(jwt_strategy_1.JwtStrategy),
-    (0, roles_decorator_1.Roles)("admin", "user"),
-    __param(0, (0, graphql_1.Args)('userId')),
-    __param(1, (0, graphql_1.Args)('newPassword')),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, graphql_1.Args)('userId')),
+    __param(2, (0, graphql_1.Args)('newPassword')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [user_entity_1.User, String, String]),
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "updatePassword", null);
 __decorate([
     (0, graphql_1.Mutation)(() => Boolean),
     (0, common_1.UseGuards)(jwt_strategy_1.JwtStrategy),
-    (0, roles_decorator_1.Roles)('Admin'),
-    __param(0, (0, graphql_1.Args)('id')),
+    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [user_entity_1.User, String]),
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "removeUser", null);
 exports.UsersResolver = UsersResolver = __decorate([

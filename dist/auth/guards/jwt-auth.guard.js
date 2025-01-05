@@ -15,6 +15,12 @@ let GqlAuthGuard = class GqlAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
         const ctx = graphql_1.GqlExecutionContext.create(context);
         return ctx.getContext().req;
     }
+    handleRequest(err, user, info) {
+        if (err || !user) {
+            throw err || new common_1.UnauthorizedException('Invalid or missing token');
+        }
+        return user;
+    }
 };
 exports.GqlAuthGuard = GqlAuthGuard;
 exports.GqlAuthGuard = GqlAuthGuard = __decorate([

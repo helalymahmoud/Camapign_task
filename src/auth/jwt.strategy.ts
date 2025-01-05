@@ -7,24 +7,44 @@ import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
+  [x: string]: any;
   constructor(
-    private usersesrvice:UsersService,
-    private configservice:ConfigService,
+    private usersService: UsersService,
+    private configService:ConfigService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),   
       ignoreExpiration: false,  
-      secretOrKey: process.env.JWT_SECRET || 'secretKey',   
+      secretOrKey: configService.get<string>('JWT_SECRET') || 'secretKey',
     });
   }
 
   async validate(payload: any) {
-    const {username} =payload
-    const user :User = await this.usersesrvice.getUser(username) 
-    if (!user){
-      throw new  UnauthorizedException();
-
+    console.log('Token Payload:', JSON.stringify(payload, null, 2)); 
+  
+    if (!payload || !payload.sub || !payload.email) {
+      throw new UnauthorizedException('Invalid token payload');
     }
-    return user
-  }
-}
+
+    const user = await this.usersService.findOne(payload.sub);
+  
+    if (!user) {
+      throw new UnauthorizedException('User not found'); 
+    }
+  
+    if (user.email !== payload.email) {
+      throw new UnauthorizedException('email does not match'); 
+    }
+  
+    if (user.isBanned) {
+      throw new UnauthorizedException('User is banned');  
+    }
+  
+    
+    return {
+      id: user.id,
+      email: user.email,
+      roles: user.roles,
+    };
+  }}
+  

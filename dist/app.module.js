@@ -46,7 +46,8 @@ exports.AppModule = AppModule = __decorate([
             }),
             graphql_1.GraphQLModule.forRootAsync({
                 driver: apollo_1.ApolloDriver,
-                imports: [dataloader_module_1.DataloaderModule,
+                imports: [
+                    dataloader_module_1.DataloaderModule,
                     bullmq_1.BullModule.forRoot({
                         connection: {
                             host: 'localhost',
@@ -54,25 +55,21 @@ exports.AppModule = AppModule = __decorate([
                         },
                     }),
                 ],
-                useFactory: (DataloaderService) => {
-                    return {
-                        autoSchemaFile: (0, path_1.join)(process.cwd(), 'src/schema.gql'),
-                        playground: true,
-                        context: async ({ req, res, }) => {
-                            return {
-                                loaders: DataloaderService.getLoaders(),
-                                req,
-                                res
-                            };
-                        },
-                        formatError: (err) => ({
-                            message: err.message,
-                            status: err.extensions.code,
-                            timestamp: new Date().toISOString(),
-                        })
-                    };
-                },
-                inject: [dataloader_service_1.DataloaderService]
+                useFactory: (dataloaderService) => ({
+                    autoSchemaFile: (0, path_1.join)(process.cwd(), 'src/schema.gql'),
+                    playground: true,
+                    context: async ({ req, res }) => ({
+                        loaders: dataloaderService.getLoaders(),
+                        req,
+                        res,
+                    }),
+                    formatError: (err) => ({
+                        message: err.message,
+                        status: err.extensions.code,
+                        timestamp: new Date().toISOString(),
+                    }),
+                }),
+                inject: [dataloader_service_1.DataloaderService],
             }),
             typeorm_1.TypeOrmModule.forRootAsync(typeorm_config_1.typeOrmConfigAsync),
             campaigns_module_1.CampaignModule,
@@ -94,14 +91,13 @@ exports.AppModule = AppModule = __decorate([
             queue_module_1.QueueModule,
             mailer_1.MailerModule,
         ],
-        providers: [app_service_1.AppService,
+        providers: [
+            app_service_1.AppService,
             {
                 provide: core_1.APP_FILTER,
                 useClass: graphql_exception_filter_1.GraphQLExceptisonFilter,
-            },]
+            },
+        ],
     })
 ], AppModule);
-function v4() {
-    throw new Error('Function not implemented.');
-}
 //# sourceMappingURL=app.module.js.map

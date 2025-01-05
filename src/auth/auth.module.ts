@@ -4,7 +4,6 @@ import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
-import { RolesGuard } from './guards/roles.guard';
 import { User } from 'src/users/entities/user.entity';
 import { ConfigModule } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
@@ -12,6 +11,7 @@ import { UsersModule } from 'src/users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { MailService } from 'src/mailer/mail.service';
 import { GqlAuthGuard,  } from './guards/jwt-auth.guard';
+import { RolesGuard } from './guards/role.guard';
 
 @Module({
   imports: [
