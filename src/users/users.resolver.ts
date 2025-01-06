@@ -4,59 +4,53 @@ import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UseGuards } from '@nestjs/common';
 import { Roles } from 'src/auth/decorators/roles.decorator';
-import { JwtStrategy } from 'src/auth/jwt.strategy';
 import { GqlAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
-import { Role } from 'src/auth/role.enum';
 import { RolesGuard } from 'src/auth/guards/role.guard';
 
   @Resolver(() => User)
   export class UsersResolver {
-    constructor(private readonly usersService: UsersService
-              
+    constructor(private readonly usersService: UsersService        
   ) {}
+  
 
-  @Roles(Role.User)
+  @UseGuards(RolesGuard,GqlAuthGuard)
+  @Roles('admin') 
   @Query(() => [User])
-  // @UseGuards(RolesGuard)  
-  @UseGuards(GqlAuthGuard)  
   async Users(
     @CurrentUser() _currentUser: User,
   ): Promise<User[]> {
     const users =await this.usersService.findAll()
-    // console.log('Users:', users);
- 
+    console.log('Users:', users);
     return users || []
     }
-  
+
 
   @Query(() => User)
-  @UseGuards(RolesGuard)
-  @Roles(Role.Admin) 
-  async User(   
-    @CurrentUser() _currentUser: User,
-    @Args('id') id: string): Promise<User> {
-    return this.usersService.findOne(id);
-  }
+  @UseGuards(RolesGuard,GqlAuthGuard)
+  @Roles('user','admin') 
+    async User(   
+      @CurrentUser() _currentUser: User,
+      @Args('id') id: string): Promise<User> {
+      return this.usersService.findOne(id);
+      
+    }
 
-@Mutation(() => User)
-@UseGuards(GqlAuthGuard)
-@Roles(Role.Admin)  
-async createUser(
-  @CurrentUser() _currentUser: User, 
-  @Args('name') name: string,
-  @Args('email') email: string,
-  @Args('password') password: string,
-): Promise<User> {
-  if (_currentUser.roles.includes('admin')) {
-    return await this.usersService.createUser({ name, email, password });
-  }
-
-  throw new Error('You do not have permission to create a user');
-}
   @Mutation(() => User)
-  @UseGuards(JwtStrategy)
-  @Roles(Role.Admin) 
+  @UseGuards(RolesGuard,GqlAuthGuard)
+  @Roles('admin') 
+  async createUser(
+    @CurrentUser() _currentUser: User, 
+    @Args('name') name: string,
+    @Args('email') email: string,
+    @Args('password') password: string,
+  ): Promise<User> {
+      return await this.usersService.createUser({ name, email, password });
+    }
+
+  @Mutation(() => User)
+  @UseGuards(RolesGuard,GqlAuthGuard)
+  @Roles('admin') 
   async updateUser(
     @CurrentUser()_CurrentUser:User,
     @Args('id') id: string,
@@ -66,8 +60,8 @@ async createUser(
 
  
   @Mutation(() => Boolean)
-  @UseGuards(JwtStrategy)
-  @Roles(Role.Admin)  
+  @UseGuards(RolesGuard,GqlAuthGuard)
+  @Roles('admin') 
     async updatePassword(
       @CurrentUser()_CurrentUser:User,
       @Args('userId') userId: string,
@@ -78,8 +72,8 @@ async createUser(
   }
 
   @Mutation(() => Boolean)
-  @UseGuards(JwtStrategy)
-  @Roles(Role.Admin) 
+  @UseGuards(RolesGuard,GqlAuthGuard)
+  @Roles('admin') 
   async removeUser(
     @CurrentUser()_CurrentUser:User,
     @Args('id') id: string): Promise<boolean> {

@@ -7,15 +7,19 @@ import { Ad } from 'src/ads/entities/ads.entity';
 import { IDataloaders } from 'src/dataloader/dataloader.interface';
 import { SearchInput } from './dto/Search-Input.dto';
 import { SearchResultUnion } from './unions';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Resolver(() => Campaign)
 export class CampaignResolver {
   adCampaignService: any; 
   constructor(
     private readonly campaignService: CampaignService,
-    private readonly adService : AdService
-  ) {} 
-
+     @InjectQueue('campaignQueue') private readonly campaignQueue: Queue,
+  ) {}
+   private readonly adService : AdService
+    
+   
   @ResolveField('ads', () => [Ad])
   getAds(
     @Parent() campaign: Campaign,   
@@ -58,17 +62,21 @@ export class CampaignResolver {
     return this.campaignService.findOne(id); 
  }
 
-  @Mutation(() => Campaign)
-  async createCampaign(
-    @Args('createCampaignInput') createCampaignInput: CreateCampaignInput): Promise<Campaign> {
-    return this.campaignService.create(createCampaignInput); 
-     }
-  @Mutation(()=>Campaign)                   
-    async updateCampaign(
-      @Args('id') id: string, 
-      @Args('updateCampaignInput') updateCampaignInput: CreateCampaignInput,): Promise<Campaign> {
-    return this.campaignService.update(id, updateCampaignInput)
-  }
+ @Mutation(() => Campaign)
+ async createCampaign(
+   @Args('createCampaignInput') createCampaignInput: CreateCampaignInput,
+ ): Promise<Campaign> {
+   await this.campaignQueue.add('createCampaign', { createCampaignInput });
+   return this.campaignService.create(createCampaignInput); 
+ }
+ @Mutation(() => Campaign)
+ async updateCampaign(
+   @Args('id') id: string,
+   @Args('updateCampaignInput') updateCampaignInput: CreateCampaignInput,
+ ): Promise<Campaign> {
+   await this.campaignQueue.add('updateCampaign', { id, updateCampaignInput });
+   return this.campaignService.update(id, updateCampaignInput);
+ }
 
   @Mutation(() => Boolean)  
   async removeCampaign(

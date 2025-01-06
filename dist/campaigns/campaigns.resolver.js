@@ -17,14 +17,14 @@ const graphql_1 = require("@nestjs/graphql");
 const create_campaign_input_1 = require("./dto/create-campaign.input");
 const campaigns_service_1 = require("./campaigns.service");
 const campaign_entity_1 = require("./entities/campaign.entity");
-const ads_service_1 = require("../ads/ads.service");
 const ads_entity_1 = require("../ads/entities/ads.entity");
 const Search_Input_dto_1 = require("./dto/Search-Input.dto");
 const unions_1 = require("./unions");
+const bull_1 = require("@nestjs/bull");
 let CampaignResolver = class CampaignResolver {
-    constructor(campaignService, adService) {
+    constructor(campaignService, campaignQueue) {
         this.campaignService = campaignService;
-        this.adService = adService;
+        this.campaignQueue = campaignQueue;
     }
     getAds(campaign, { loaders }) {
         const { id: campaignId } = campaign;
@@ -49,9 +49,11 @@ let CampaignResolver = class CampaignResolver {
         return this.campaignService.findOne(id);
     }
     async createCampaign(createCampaignInput) {
+        await this.campaignQueue.add('createCampaign', { createCampaignInput });
         return this.campaignService.create(createCampaignInput);
     }
     async updateCampaign(id, updateCampaignInput) {
+        await this.campaignQueue.add('updateCampaign', { id, updateCampaignInput });
         return this.campaignService.update(id, updateCampaignInput);
     }
     async removeCampaign(id) {
@@ -126,7 +128,7 @@ __decorate([
 ], CampaignResolver.prototype, "removeCampaign", null);
 exports.CampaignResolver = CampaignResolver = __decorate([
     (0, graphql_1.Resolver)(() => campaign_entity_1.Campaign),
-    __metadata("design:paramtypes", [campaigns_service_1.CampaignService,
-        ads_service_1.AdService])
+    __param(1, (0, bull_1.InjectQueue)('campaignQueue')),
+    __metadata("design:paramtypes", [campaigns_service_1.CampaignService, Object])
 ], CampaignResolver);
 //# sourceMappingURL=campaigns.resolver.js.map

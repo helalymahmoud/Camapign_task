@@ -1,15 +1,16 @@
 import { CreateCampaignInput } from './dto/create-campaign.input';
 import { CampaignService } from './campaigns.service';
 import { Campaign } from './entities/campaign.entity';
-import { AdService } from 'src/ads/ads.service';
 import { Ad } from 'src/ads/entities/ads.entity';
 import { IDataloaders } from 'src/dataloader/dataloader.interface';
 import { SearchInput } from './dto/Search-Input.dto';
+import { Queue } from 'bull';
 export declare class CampaignResolver {
     private readonly campaignService;
-    private readonly adService;
+    private readonly campaignQueue;
     adCampaignService: any;
-    constructor(campaignService: CampaignService, adService: AdService);
+    constructor(campaignService: CampaignService, campaignQueue: Queue);
+    private readonly adService;
     getAds(campaign: Campaign, { loaders }: {
         loaders: IDataloaders;
     }): Promise<Ad>;

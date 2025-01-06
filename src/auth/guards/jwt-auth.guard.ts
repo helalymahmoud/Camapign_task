@@ -4,15 +4,14 @@ import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class GqlAuthGuard extends AuthGuard('jwt') {
-  getRequest(context: ExecutionContext) {
+  canActivate(context: ExecutionContext): boolean {
     const ctx = GqlExecutionContext.create(context);
-    return ctx.getContext().req;
-  }
+    const { currentUser } = ctx.getContext();
 
-  handleRequest(err: any, user: any, info: any) {
-    if (err || !user) {
-      throw err || new UnauthorizedException('Invalid or missing token');
+    if (!currentUser) {
+      throw new UnauthorizedException('User not authenticated');
     }
-    return user;
+
+    return true;
   }
 }

@@ -1,6 +1,6 @@
+import { Repository } from 'typeorm';
 import { Ad } from 'src/ads/entities/ads.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Repository } from 'typeorm';
 import { AdInteraction } from './ads-interaction.entity';
 export declare class AdInteractionService {
     private adInteractionRepository;

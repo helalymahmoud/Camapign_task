@@ -19,21 +19,21 @@ let NotificationResolver = class NotificationResolver {
     constructor(notificationService) {
         this.notificationService = notificationService;
     }
-    async SendNotification(FcmToken, title, body) {
-        await this.notificationService.sendPushNotification(FcmToken, title, body);
+    async sendNotification(fcmToken, title, body) {
+        await this.notificationService.sendPushNotification(fcmToken, title, body);
         return 'Notification sent!';
     }
 };
 exports.NotificationResolver = NotificationResolver;
 __decorate([
     (0, graphql_1.Mutation)(() => String),
-    __param(0, (0, graphql_1.Args)('FcmToken')),
-    __param(1, (0, graphql_1.Args)('Title')),
-    __param(2, (0, graphql_1.Args)('Body')),
+    __param(0, (0, graphql_1.Args)('fcmToken')),
+    __param(1, (0, graphql_1.Args)('title')),
+    __param(2, (0, graphql_1.Args)('body')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", Promise)
-], NotificationResolver.prototype, "SendNotification", null);
+], NotificationResolver.prototype, "sendNotification", null);
 exports.NotificationResolver = NotificationResolver = __decorate([
     (0, graphql_1.Resolver)(),
     __metadata("design:paramtypes", [notification_service_1.NotificationService])

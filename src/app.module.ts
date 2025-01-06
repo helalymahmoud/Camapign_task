@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
+import * as jwt from 'jsonwebtoken'; // إضافة jwt
 import { AppService } from './app.service';
 import { CampaignModule } from './campaigns/campaigns.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -46,11 +47,20 @@ import { MailerModule } from '@nestjs-modules/mailer';
       useFactory: (dataloaderService: DataloaderService) => ({
         autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
         playground: true,
-        context: async ({ req, res }) => ({
-          loaders: dataloaderService.getLoaders(),
-          req,
-          res,
-        }),
+        context: ({ req, res }) => {
+          const token = req.headers.authorization?.split(' ')[1];
+          let currentUser = null;
+
+          if (token) {
+            try {
+              currentUser = jwt.verify(token, "secretKey"); 
+            } catch (err) {
+              console.error('Invalid token:', err);
+            }
+          }
+
+          return { req, res, currentUser, loaders: dataloaderService.getLoaders() };  
+        },
         formatError: (err) => ({
           message: err.message,
           status: err.extensions.code,

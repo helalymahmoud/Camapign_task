@@ -88,7 +88,7 @@ type Mutation {
   updateUser(id: String!, updateUserDto: UpdateUserDto!): User!
   updatePassword(userId: String!, newPassword: String!): Boolean!
   removeUser(id: String!): Boolean!
-  SendNotification(FcmToken: String!, Title: String!, Body: String!): String!
+  sendNotification(fcmToken: String!, title: String!, body: String!): String!
 
   """Register a new user"""
   register(data: RegisterDto!): String!

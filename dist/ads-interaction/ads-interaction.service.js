@@ -27,15 +27,27 @@ let AdInteractionService = class AdInteractionService {
         interaction.ad = ad;
         interaction.interactionType = interactionType;
         interaction.timestamp = new Date();
-        await this.adInteractionRepository.save(interaction);
+        try {
+            await this.adInteractionRepository.save(interaction);
+        }
+        catch (error) {
+            console.error('Error saving interaction:', error);
+            throw new Error('Could not save interaction');
+        }
     }
     async getAdStatistics(adId) {
-        const interactions = await this.adInteractionRepository.find({ where: { ad: { id: adId } } });
-        const views = interactions.filter(i => i.interactionType === 'view').length;
-        const clicks = interactions.filter(i => i.interactionType === 'click').length;
-        const likes = interactions.filter(i => i.interactionType === 'like').length;
-        const score = views > 0 ? (clicks / views) : 0;
-        return { views, clicks, likes, score };
+        try {
+            const interactions = await this.adInteractionRepository.find({ where: { ad: { id: adId } } });
+            const views = interactions.filter(i => i.interactionType === 'view').length;
+            const clicks = interactions.filter(i => i.interactionType === 'click').length;
+            const likes = interactions.filter(i => i.interactionType === 'like').length;
+            const score = views > 0 ? (clicks / views) : 0;
+            return { views, clicks, likes, score };
+        }
+        catch (error) {
+            console.error('Error fetching statistics:', error);
+            throw new Error('Could not fetch statistics');
+        }
     }
 };
 exports.AdInteractionService = AdInteractionService;

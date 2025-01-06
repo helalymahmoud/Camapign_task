@@ -21,13 +21,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: any) {
     console.log('Token Payload:', JSON.stringify(payload, null, 2)); 
-  
+    
     if (!payload || !payload.sub || !payload.email) {
       throw new UnauthorizedException('Invalid token payload');
     }
-
-    const user = await this.usersService.findOne(payload.sub);
   
+    const user = await this.usersService.findOne(payload.sub);
+    
     if (!user) {
       throw new UnauthorizedException('User not found'); 
     }
@@ -40,11 +40,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('User is banned');  
     }
   
-    
     return {
-      id: user.id,
+      sub : user.id,
       email: user.email,
-      roles: user.roles,
+      roles: user.roles, 
     };
-  }}
+  }
+}  
   

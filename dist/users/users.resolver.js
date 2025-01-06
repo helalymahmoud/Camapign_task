@@ -19,10 +19,8 @@ const user_entity_1 = require("./entities/user.entity");
 const update_user_dto_1 = require("./dto/update-user.dto");
 const common_1 = require("@nestjs/common");
 const roles_decorator_1 = require("../auth/decorators/roles.decorator");
-const jwt_strategy_1 = require("../auth/jwt.strategy");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const current_user_decorator_1 = require("../auth/decorators/current-user.decorator");
-const role_enum_1 = require("../auth/role.enum");
 const role_guard_1 = require("../auth/guards/role.guard");
 let UsersResolver = class UsersResolver {
     constructor(usersService) {
@@ -30,16 +28,14 @@ let UsersResolver = class UsersResolver {
     }
     async Users(_currentUser) {
         const users = await this.usersService.findAll();
+        console.log('Users:', users);
         return users || [];
     }
     async User(_currentUser, id) {
         return this.usersService.findOne(id);
     }
     async createUser(_currentUser, name, email, password) {
-        if (_currentUser.roles.includes('admin')) {
-            return await this.usersService.createUser({ name, email, password });
-        }
-        throw new Error('You do not have permission to create a user');
+        return await this.usersService.createUser({ name, email, password });
     }
     async updateUser(_CurrentUser, id, updateUserDto) {
         return this.usersService.update(id, updateUserDto);
@@ -55,9 +51,9 @@ let UsersResolver = class UsersResolver {
 };
 exports.UsersResolver = UsersResolver;
 __decorate([
-    (0, roles_decorator_1.Roles)(role_enum_1.Role.User),
+    (0, common_1.UseGuards)(role_guard_1.RolesGuard, jwt_auth_guard_1.GqlAuthGuard),
+    (0, roles_decorator_1.Roles)('admin'),
     (0, graphql_1.Query)(() => [user_entity_1.User]),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.GqlAuthGuard),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User]),
@@ -65,8 +61,8 @@ __decorate([
 ], UsersResolver.prototype, "Users", null);
 __decorate([
     (0, graphql_1.Query)(() => user_entity_1.User),
-    (0, common_1.UseGuards)(role_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
+    (0, common_1.UseGuards)(role_guard_1.RolesGuard, jwt_auth_guard_1.GqlAuthGuard),
+    (0, roles_decorator_1.Roles)('user', 'admin'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
@@ -75,8 +71,8 @@ __decorate([
 ], UsersResolver.prototype, "User", null);
 __decorate([
     (0, graphql_1.Mutation)(() => user_entity_1.User),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.GqlAuthGuard),
-    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
+    (0, common_1.UseGuards)(role_guard_1.RolesGuard, jwt_auth_guard_1.GqlAuthGuard),
+    (0, roles_decorator_1.Roles)('admin'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, graphql_1.Args)('name')),
     __param(2, (0, graphql_1.Args)('email')),
@@ -87,8 +83,8 @@ __decorate([
 ], UsersResolver.prototype, "createUser", null);
 __decorate([
     (0, graphql_1.Mutation)(() => user_entity_1.User),
-    (0, common_1.UseGuards)(jwt_strategy_1.JwtStrategy),
-    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
+    (0, common_1.UseGuards)(role_guard_1.RolesGuard, jwt_auth_guard_1.GqlAuthGuard),
+    (0, roles_decorator_1.Roles)('admin'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, graphql_1.Args)('id')),
     __param(2, (0, graphql_1.Args)('updateUserDto')),
@@ -98,8 +94,8 @@ __decorate([
 ], UsersResolver.prototype, "updateUser", null);
 __decorate([
     (0, graphql_1.Mutation)(() => Boolean),
-    (0, common_1.UseGuards)(jwt_strategy_1.JwtStrategy),
-    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
+    (0, common_1.UseGuards)(role_guard_1.RolesGuard, jwt_auth_guard_1.GqlAuthGuard),
+    (0, roles_decorator_1.Roles)('admin'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, graphql_1.Args)('userId')),
     __param(2, (0, graphql_1.Args)('newPassword')),
@@ -109,8 +105,8 @@ __decorate([
 ], UsersResolver.prototype, "updatePassword", null);
 __decorate([
     (0, graphql_1.Mutation)(() => Boolean),
-    (0, common_1.UseGuards)(jwt_strategy_1.JwtStrategy),
-    (0, roles_decorator_1.Roles)(role_enum_1.Role.Admin),
+    (0, common_1.UseGuards)(role_guard_1.RolesGuard, jwt_auth_guard_1.GqlAuthGuard),
+    (0, roles_decorator_1.Roles)('admin'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),

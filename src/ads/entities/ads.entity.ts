@@ -7,6 +7,9 @@ import { Partner } from "src/Partners/entites/Partner.entity";
 @Entity()
 @ObjectType()
 export class Ad {
+  static findOne(arg0: { where: { id: string; }; }) {
+    throw new Error('Method not implemented.');
+  }
 
   [x: string]: any;
   @Field()

@@ -11,15 +11,13 @@ const common_1 = require("@nestjs/common");
 const graphql_1 = require("@nestjs/graphql");
 const passport_1 = require("@nestjs/passport");
 let GqlAuthGuard = class GqlAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
-    getRequest(context) {
+    canActivate(context) {
         const ctx = graphql_1.GqlExecutionContext.create(context);
-        return ctx.getContext().req;
-    }
-    handleRequest(err, user, info) {
-        if (err || !user) {
-            throw err || new common_1.UnauthorizedException('Invalid or missing token');
+        const { currentUser } = ctx.getContext();
+        if (!currentUser) {
+            throw new common_1.UnauthorizedException('User not authenticated');
         }
-        return user;
+        return true;
     }
 };
 exports.GqlAuthGuard = GqlAuthGuard;

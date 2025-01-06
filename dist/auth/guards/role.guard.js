@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RolesGuard = void 0;
 const common_1 = require("@nestjs/common");
 const core_1 = require("@nestjs/core");
+const graphql_1 = require("@nestjs/graphql");
 const roles_decorator_1 = require("../decorators/roles.decorator");
 let RolesGuard = class RolesGuard {
     constructor(reflector) {
@@ -22,17 +23,18 @@ let RolesGuard = class RolesGuard {
             context.getHandler(),
             context.getClass(),
         ]);
-        if (!requiredRoles || requiredRoles.length === 0) {
-            return true;
-        }
-        const request = context.switchToHttp().getRequest();
-        const user = request.user;
-        if (!user) {
+        const ctx = graphql_1.GqlExecutionContext.create(context);
+        const { currentUser } = ctx.getContext();
+        if (!currentUser) {
             throw new common_1.ForbiddenException('User not authenticated');
         }
-        const hasRequiredRole = requiredRoles.some((role) => user.role === role);
-        if (!hasRequiredRole) {
-            throw new common_1.ForbiddenException('Forbidden resource');
+        const userRoles = Array.isArray(currentUser.roles) ? currentUser.roles : [currentUser.role];
+        if (!userRoles || userRoles.length === 0) {
+            throw new common_1.ForbiddenException('User roles not found');
+        }
+        const hasRole = requiredRoles.some((role) => userRoles.includes(role));
+        if (!hasRole) {
+            throw new common_1.ForbiddenException('Access denied: insufficient permissions');
         }
         return true;
     }

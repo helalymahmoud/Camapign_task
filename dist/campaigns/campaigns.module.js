@@ -15,13 +15,21 @@ const campaign_entity_1 = require("./entities/campaign.entity");
 const dataloader_service_1 = require("../dataloader/dataloader.service");
 const ads_service_1 = require("../ads/ads.service");
 const ads_entity_1 = require("../ads/entities/ads.entity");
+const bull_1 = require("@nestjs/bull");
+const Campaign_Processor_1 = require("./Campaign.Processor");
 let CampaignModule = class CampaignModule {
 };
 exports.CampaignModule = CampaignModule;
 exports.CampaignModule = CampaignModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([campaign_entity_1.Campaign, ads_entity_1.Ad,]),],
-        providers: [campaigns_service_1.CampaignService, campaigns_resolver_1.CampaignResolver, dataloader_service_1.DataloaderService, ads_service_1.AdService,],
+        imports: [
+            bull_1.BullModule.registerQueue({
+                name: 'campaignQueue',
+                redis: { host: 'localhost', port: 6379 },
+            }),
+            typeorm_1.TypeOrmModule.forFeature([campaign_entity_1.Campaign, ads_entity_1.Ad,]),
+        ],
+        providers: [campaigns_service_1.CampaignService, campaigns_resolver_1.CampaignResolver, dataloader_service_1.DataloaderService, ads_service_1.AdService, Campaign_Processor_1.CampaignProcessor],
         exports: [dataloader_service_1.DataloaderService]
     })
 ], CampaignModule);

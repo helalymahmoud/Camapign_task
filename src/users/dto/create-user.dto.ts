@@ -19,7 +19,6 @@ export class CreateUserDto {
   password: string;
 
   @Field({ nullable: true }) 
-  @IsString()
   @IsOptional()
   role: string = 'user';
 }

@@ -6,6 +6,9 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from "typeorm";
 @Entity()
 @ObjectType()
 export class User {
+  static findOne(arg0: { where: { id: string; }; }) {
+    throw new Error('Method not implemented.');
+  }
   [x: string]: any;
   @Field(()=>String)
   @PrimaryGeneratedColumn("uuid")

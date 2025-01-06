@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const graphql_1 = require("@nestjs/graphql");
 const apollo_1 = require("@nestjs/apollo");
 const path_1 = require("path");
+const jwt = require("jsonwebtoken");
 const app_service_1 = require("./app.service");
 const campaigns_module_1 = require("./campaigns/campaigns.module");
 const typeorm_1 = require("@nestjs/typeorm");
@@ -58,11 +59,19 @@ exports.AppModule = AppModule = __decorate([
                 useFactory: (dataloaderService) => ({
                     autoSchemaFile: (0, path_1.join)(process.cwd(), 'src/schema.gql'),
                     playground: true,
-                    context: async ({ req, res }) => ({
-                        loaders: dataloaderService.getLoaders(),
-                        req,
-                        res,
-                    }),
+                    context: ({ req, res }) => {
+                        const token = req.headers.authorization?.split(' ')[1];
+                        let currentUser = null;
+                        if (token) {
+                            try {
+                                currentUser = jwt.verify(token, "secretKey");
+                            }
+                            catch (err) {
+                                console.error('Invalid token:', err);
+                            }
+                        }
+                        return { req, res, currentUser, loaders: dataloaderService.getLoaders() };
+                    },
                     formatError: (err) => ({
                         message: err.message,
                         status: err.extensions.code,

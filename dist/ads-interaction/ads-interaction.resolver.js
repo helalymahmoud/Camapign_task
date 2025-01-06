@@ -15,18 +15,41 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdInteractionResolver = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const ads_interaction_service_1 = require("./ads-interaction.service");
+const ads_entity_1 = require("../ads/entities/ads.entity");
+const user_entity_1 = require("../users/entities/user.entity");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
 let AdInteractionResolver = class AdInteractionResolver {
-    constructor(adInteractionService) {
+    constructor(adInteractionService, userRepository, adRepository) {
         this.adInteractionService = adInteractionService;
+        this.userRepository = userRepository;
+        this.adRepository = adRepository;
+    }
+    async trackAdInteraction(userId, adId, interactionType) {
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        const ad = await this.adRepository.findOne({ where: { id: adId } });
+        if (!user || !ad) {
+            throw new Error('User or Ad not found');
+        }
+        await this.adInteractionService.trackInteraction(user, ad, interactionType);
+        return `Interaction of type ${interactionType} tracked successfully.`;
     }
     async getAdStatistics(adId) {
-        const stats = await this.adInteractionService.getAdStatistics(adId);
-        return `Views: ${stats.views}, Clicks: ${stats.clicks}, Likes: ${stats.likes}, Score: ${stats.score}`;
+        return this.adInteractionService.getAdStatistics(adId);
     }
 };
 exports.AdInteractionResolver = AdInteractionResolver;
 __decorate([
-    (0, graphql_1.Query)(() => String),
+    (0, graphql_1.Mutation)(() => String),
+    __param(0, (0, graphql_1.Args)('userId')),
+    __param(1, (0, graphql_1.Args)('adId')),
+    __param(2, (0, graphql_1.Args)('interactionType')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", Promise)
+], AdInteractionResolver.prototype, "trackAdInteraction", null);
+__decorate([
+    (0, graphql_1.Query)(() => Object),
     __param(0, (0, graphql_1.Args)('adId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -34,6 +57,10 @@ __decorate([
 ], AdInteractionResolver.prototype, "getAdStatistics", null);
 exports.AdInteractionResolver = AdInteractionResolver = __decorate([
     (0, graphql_1.Resolver)(),
-    __metadata("design:paramtypes", [ads_interaction_service_1.AdInteractionService])
+    __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(2, (0, typeorm_1.InjectRepository)(ads_entity_1.Ad)),
+    __metadata("design:paramtypes", [ads_interaction_service_1.AdInteractionService,
+        typeorm_2.Repository,
+        typeorm_2.Repository])
 ], AdInteractionResolver);
 //# sourceMappingURL=ads-interaction.resolver.js.map

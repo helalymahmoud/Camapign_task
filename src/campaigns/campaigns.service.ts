@@ -99,10 +99,10 @@ async findOne(id: string): Promise<Campaign> {
   return this.campaignRepository.findOne({where:{id}}); 
 }
 
-async create(createCampaignInput: CreateCampaignInput): Promise<Campaign> {
-  const campaign = this.campaignRepository.create(createCampaignInput); 
-  return this.campaignRepository.save(campaign); 
-}  
+ async create(createCampaignInput: CreateCampaignInput): Promise<Campaign> {
+    const campaign = this.campaignRepository.create(createCampaignInput);
+    return this.campaignRepository.save(campaign);
+  }
 
   async update(id: string, updateCampaignInput: CreateCampaignInput): Promise<Campaign> {
     await this.campaignRepository.update(id, updateCampaignInput); 

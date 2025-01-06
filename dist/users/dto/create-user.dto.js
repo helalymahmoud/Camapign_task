@@ -34,7 +34,6 @@ __decorate([
 ], CreateUserDto.prototype, "password", void 0);
 __decorate([
     (0, graphql_1.Field)({ nullable: true }),
-    (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "role", void 0);

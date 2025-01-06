@@ -15,6 +15,9 @@ const ads_entity_1 = require("../../ads/entities/ads.entity");
 const campaign_entity_1 = require("../../campaigns/entities/campaign.entity");
 const typeorm_1 = require("typeorm");
 let User = class User {
+    static findOne(arg0) {
+        throw new Error('Method not implemented.');
+    }
 };
 exports.User = User;
 __decorate([
