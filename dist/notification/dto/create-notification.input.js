@@ -9,28 +9,30 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SendNotificationInput = void 0;
+exports.CreateNotificationInput = void 0;
 const graphql_1 = require("@nestjs/graphql");
-let SendNotificationInput = class SendNotificationInput {
+const class_validator_1 = require("class-validator");
+let CreateNotificationInput = class CreateNotificationInput {
 };
-exports.SendNotificationInput = SendNotificationInput;
+exports.CreateNotificationInput = CreateNotificationInput;
 __decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
     (0, graphql_1.Field)(),
     __metadata("design:type", String)
-], SendNotificationInput.prototype, "token", void 0);
+], CreateNotificationInput.prototype, "userId", void 0);
 __decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
     (0, graphql_1.Field)(),
     __metadata("design:type", String)
-], SendNotificationInput.prototype, "title", void 0);
+], CreateNotificationInput.prototype, "message", void 0);
 __decorate([
+    (0, class_validator_1.IsNotEmpty)(),
     (0, graphql_1.Field)(),
-    __metadata("design:type", String)
-], SendNotificationInput.prototype, "body", void 0);
-__decorate([
-    (0, graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], SendNotificationInput.prototype, "icon", void 0);
-exports.SendNotificationInput = SendNotificationInput = __decorate([
+    __metadata("design:type", Date)
+], CreateNotificationInput.prototype, "timestamp", void 0);
+exports.CreateNotificationInput = CreateNotificationInput = __decorate([
     (0, graphql_1.InputType)()
-], SendNotificationInput);
-//# sourceMappingURL=send-notification.input.js.map
+], CreateNotificationInput);
+//# sourceMappingURL=create-notification.input.js.map
