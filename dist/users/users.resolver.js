@@ -52,7 +52,7 @@ let UsersResolver = class UsersResolver {
 exports.UsersResolver = UsersResolver;
 __decorate([
     (0, common_1.UseGuards)(role_guard_1.RolesGuard, jwt_auth_guard_1.GqlAuthGuard),
-    (0, roles_decorator_1.Roles)('admin'),
+    (0, roles_decorator_1.Roles)('user', 'admin'),
     (0, graphql_1.Query)(() => [user_entity_1.User]),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),

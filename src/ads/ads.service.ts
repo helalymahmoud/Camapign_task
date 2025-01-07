@@ -39,6 +39,7 @@ async findOne(id:string):Promise<Ad>{
   return this.adRepository.findOne({where:{id}});
 }
 
+
 async create(CreateAdInput:CreateAdInput):Promise<Ad>{
   const ad = this.adRepository.create(CreateAdInput);
   return this.adRepository.save(ad);
@@ -52,5 +53,7 @@ async create(CreateAdInput:CreateAdInput):Promise<Ad>{
 async remove (id:string):Promise<void>{
   await this.adRepository.delete(id)
 }
+
+
 
 }

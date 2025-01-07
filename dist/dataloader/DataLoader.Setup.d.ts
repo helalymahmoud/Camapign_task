@@ -1,6 +1,8 @@
 import * as DataLoader from 'dataloader';
 import { AdService } from 'src/ads/ads.service';
-import { Ad } from 'src/ads/entities/ads.entity';
-export declare function createLoaders(adService: AdService): {
-    adsLoader: DataLoader<string, Ad[], string>;
-};
+export declare function createLoaders(adService: AdService): void;
+export declare class AdsLoader {
+    private readonly adsService;
+    constructor(adsService: AdService);
+    readonly adsLoader: DataLoader<string, any, string>;
+}

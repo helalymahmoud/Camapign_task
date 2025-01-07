@@ -7,7 +7,7 @@ import { Partner } from "src/Partners/entites/Partner.entity";
 @Entity()
 @ObjectType()
 export class Ad {
-  static findOne(arg0: { where: { id: string; }; }) {
+  static findOne(_arg0: { where: { id: string; }; }) {
     throw new Error('Method not implemented.');
   }
 
@@ -46,9 +46,5 @@ export class Ad {
 
   @ManyToMany (()=>Partner,(Partner)=>Partner.ads)
   partners:Partner[];
-
-
-
-
 
 }

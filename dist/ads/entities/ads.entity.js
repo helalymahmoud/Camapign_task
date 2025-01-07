@@ -16,7 +16,7 @@ const campaign_entity_1 = require("../../campaigns/entities/campaign.entity");
 const user_entity_1 = require("../../users/entities/user.entity");
 const Partner_entity_1 = require("../../Partners/entites/Partner.entity");
 let Ad = class Ad {
-    static findOne(arg0) {
+    static findOne(_arg0) {
         throw new Error('Method not implemented.');
     }
 };

@@ -14,8 +14,10 @@ import { RolesGuard } from 'src/auth/guards/role.guard';
   ) {}
   
 
+  
+
   @UseGuards(RolesGuard,GqlAuthGuard)
-  @Roles('admin') 
+  @Roles('user','admin') 
   @Query(() => [User])
   async Users(
     @CurrentUser() _currentUser: User,

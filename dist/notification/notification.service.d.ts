@@ -1,7 +1,20 @@
 export declare class NotificationService {
-    [x: string]: any;
-    constructor();
-    sendPushNotification(token: string, title: string, body: string): Promise<void>;
-    sendDailyNotifications(): Promise<void>;
-    private getUserTokens;
+    sendNotification(payload: {
+        token: string;
+        title: string;
+        body: string;
+        icon?: string;
+    }): Promise<string>;
+    sendNotificationsToMultipleTokens(payload: {
+        tokens: string[];
+        title: string;
+        body: string;
+        icon?: string;
+    }): Promise<void>;
+    sendTopicNotification(payload: {
+        topic: string;
+        title: string;
+        body: string;
+        icon?: string;
+    }): Promise<string>;
 }

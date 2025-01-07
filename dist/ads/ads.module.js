@@ -14,12 +14,13 @@ const ads_entity_1 = require("./entities/ads.entity");
 const ads_resolver_1 = require("./ads.resolver");
 const ads_service_1 = require("./ads.service");
 const dataloader_service_1 = require("../dataloader/dataloader.service");
+const ad_repository_1 = require("./ad.repository");
 let AdModule = class AdModule {
 };
 exports.AdModule = AdModule;
 exports.AdModule = AdModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([ads_entity_1.Ad]), campaigns_module_1.CampaignModule],
+        imports: [typeorm_1.TypeOrmModule.forFeature([ads_entity_1.Ad, ad_repository_1.adRepository]), campaigns_module_1.CampaignModule],
         providers: [ads_service_1.AdService, ads_resolver_1.AdResolver, dataloader_service_1.DataloaderService,],
         exports: [dataloader_service_1.DataloaderService]
     })
