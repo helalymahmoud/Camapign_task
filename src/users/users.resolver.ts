@@ -12,9 +12,6 @@ import { RolesGuard } from 'src/auth/guards/role.guard';
   export class UsersResolver {
     constructor(private readonly usersService: UsersService        
   ) {}
-  
-
-  
 
   @UseGuards(RolesGuard,GqlAuthGuard)
   @Roles('user','admin') 
