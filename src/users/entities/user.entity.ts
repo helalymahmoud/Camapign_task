@@ -54,6 +54,11 @@ export class User {
   @Column({ type: 'timestamp', nullable: true })
   resetPasswordExpiresAt: Date;
 
+  @Column({
+    default: 'ACTIVE',
+  })
+  status: string;
+
 }
 
 

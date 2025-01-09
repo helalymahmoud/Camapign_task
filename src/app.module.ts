@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
-import * as jwt from 'jsonwebtoken'; // إضافة jwt
+import * as jwt from 'jsonwebtoken'; 
 import { AppService } from './app.service';
 import { CampaignModule } from './campaigns/campaigns.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,7 +13,6 @@ import { Campaign } from './campaigns/entities/campaign.entity';
 import { Partner } from './Partners/entites/Partner.entity';
 import { User } from './users/entities/user.entity';
 import { Ticket } from './tickets/entities/tickets.entity';
-import { NotificationModule } from './notification/notification.module';
 import { AuthModule } from './auth/auth.module';
 import { AdModule } from './ads/ads.module';
 import { PartnerModule } from './Partners/partner.module';
@@ -27,6 +26,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { QueueModule } from './queue/queue.module';
 import { ConfigModule } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [

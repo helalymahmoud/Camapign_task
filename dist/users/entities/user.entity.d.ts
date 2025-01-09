@@ -20,4 +20,5 @@ export declare class User {
     otpExpiresAt: Date;
     resetPasswordToken: string;
     resetPasswordExpiresAt: Date;
+    status: string;
 }

@@ -1,26 +1,33 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { User } from 'src/users/entities/user.entity';
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from 'typeorm';
+import { NotificationToken } from './notification-token.entity';
+import { ObjectType, Field } from '@nestjs/graphql';
 
-@Entity() 
+@Entity()
 @ObjectType()
-export class Notification {
-  @PrimaryGeneratedColumn('uuid')
+export class Notifications {
+  @PrimaryGeneratedColumn()
+  @Field(()=>String)
   id: string;
 
-  @Field()
-  @Column('text')
-  message: string; 
+  @ManyToOne(() => NotificationToken)
+  @JoinColumn({ name: 'notification_token_id', referencedColumnName: 'id' })
+  @Field(() => NotificationToken) 
+  notification_token: NotificationToken;
 
-  @Field()
   @Column()
-  timestamp: Date;   
+  @Field()
+  title: string;
 
-  
-  @ManyToOne(() => User, (user) => user.notifications)
-  user: User;
+  @Column({ type: 'text', nullable: true })
+  @Field({ nullable: true })
+  body: string; 
+  @Column()
+  @Field()
+  created_by: string;
 
-
-
-
+  @Column({
+    default: 'ACTIVE',
+  })
+  @Field()
+  status: string;
 }

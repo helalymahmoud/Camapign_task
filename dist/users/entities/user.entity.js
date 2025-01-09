@@ -72,6 +72,12 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', nullable: true }),
     __metadata("design:type", Date)
 ], User.prototype, "resetPasswordExpiresAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        default: 'ACTIVE',
+    }),
+    __metadata("design:type", String)
+], User.prototype, "status", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)(),
     (0, graphql_1.ObjectType)()

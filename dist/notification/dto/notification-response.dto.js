@@ -9,24 +9,32 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateNotificationDto = void 0;
-const class_validator_1 = require("class-validator");
+exports.NotificationResponseDto = void 0;
 const graphql_1 = require("@nestjs/graphql");
-let UpdateNotificationDto = class UpdateNotificationDto {
+let NotificationResponseDto = class NotificationResponseDto {
 };
-exports.UpdateNotificationDto = UpdateNotificationDto;
+exports.NotificationResponseDto = NotificationResponseDto;
 __decorate([
     (0, graphql_1.Field)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], NotificationResponseDto.prototype, "id", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
     __metadata("design:type", String)
-], UpdateNotificationDto.prototype, "deviceToken", void 0);
+], NotificationResponseDto.prototype, "title", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", String)
+], NotificationResponseDto.prototype, "body", void 0);
+__decorate([
+    (0, graphql_1.Field)(),
+    __metadata("design:type", Date)
+], NotificationResponseDto.prototype, "sentAt", void 0);
 __decorate([
     (0, graphql_1.Field)({ nullable: true }),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], UpdateNotificationDto.prototype, "reason", void 0);
-exports.UpdateNotificationDto = UpdateNotificationDto = __decorate([
+    __metadata("design:type", Date)
+], NotificationResponseDto.prototype, "readAt", void 0);
+exports.NotificationResponseDto = NotificationResponseDto = __decorate([
     (0, graphql_1.InputType)()
-], UpdateNotificationDto);
-//# sourceMappingURL=update-notification.input.js.map
+], NotificationResponseDto);
+//# sourceMappingURL=notification-response.dto.js.map

@@ -1,6 +1,6 @@
-import { CreateNotificationInput } from './create-notification.input';
-declare const UpdateNotificationInput_base: import("@nestjs/common").Type<Partial<CreateNotificationInput>>;
-export declare class UpdateNotificationInput extends UpdateNotificationInput_base {
-    id: number;
+import { FindOperator } from 'typeorm';
+export declare class UpdateNotificationDto {
+    deviceToken: string;
+    reason?: string;
+    device_type: string | FindOperator<string>;
 }
-export {};

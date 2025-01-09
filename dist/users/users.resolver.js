@@ -22,6 +22,8 @@ const roles_decorator_1 = require("../auth/decorators/roles.decorator");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const current_user_decorator_1 = require("../auth/decorators/current-user.decorator");
 const role_guard_1 = require("../auth/guards/role.guard");
+const update_notification_input_1 = require("../notification/dto/update-notification.input");
+const notification_dto_1 = require("../notification/dto/notification.dto");
 let UsersResolver = class UsersResolver {
     constructor(usersService) {
         this.usersService = usersService;
@@ -47,6 +49,14 @@ let UsersResolver = class UsersResolver {
     async removeUser(_CurrentUser, id) {
         await this.usersService.remove(id);
         return true;
+    }
+    async enablePush(userId, notificationDto) {
+        await this.usersService.enablePush(userId, notificationDto);
+        return 'Push notifications enabled successfully';
+    }
+    async disablePush(userId, updateNotificationDto) {
+        await this.usersService.disablePush(userId, updateNotificationDto);
+        return 'Push notifications disabled successfully';
     }
 };
 exports.UsersResolver = UsersResolver;
@@ -113,6 +123,22 @@ __decorate([
     __metadata("design:paramtypes", [user_entity_1.User, String]),
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "removeUser", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => String),
+    __param(0, (0, graphql_1.Args)('id', { type: () => String })),
+    __param(1, (0, graphql_1.Args)('notificationDto')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, notification_dto_1.NotificationDto]),
+    __metadata("design:returntype", Promise)
+], UsersResolver.prototype, "enablePush", null);
+__decorate([
+    (0, graphql_1.Mutation)(() => String),
+    __param(0, (0, graphql_1.Args)('id', { type: () => String })),
+    __param(1, (0, graphql_1.Args)('updateNotificationDto')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, update_notification_input_1.UpdateNotificationDto]),
+    __metadata("design:returntype", Promise)
+], UsersResolver.prototype, "disablePush", null);
 exports.UsersResolver = UsersResolver = __decorate([
     (0, graphql_1.Resolver)(() => user_entity_1.User),
     __metadata("design:paramtypes", [users_service_1.UsersService])

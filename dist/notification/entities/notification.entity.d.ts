@@ -1,7 +1,9 @@
-import { User } from 'src/users/entities/user.entity';
-export declare class Notification {
+import { NotificationToken } from './notification-token.entity';
+export declare class Notifications {
     id: string;
-    message: string;
-    timestamp: Date;
-    user: User;
+    notification_token: NotificationToken;
+    title: string;
+    body: string;
+    created_by: string;
+    status: string;
 }

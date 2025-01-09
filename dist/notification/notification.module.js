@@ -11,19 +11,20 @@ const common_1 = require("@nestjs/common");
 const notification_service_1 = require("./notification.service");
 const typeorm_1 = require("@nestjs/typeorm");
 const notification_entity_1 = require("./entities/notification.entity");
+const notification_token_entity_1 = require("./entities/notification-token.entity");
 const notification_resolver_1 = require("./notification.resolver");
-const campaigns_module_1 = require("../campaigns/campaigns.module");
-const campaign_entity_1 = require("../campaigns/entities/campaign.entity");
+const users_service_1 = require("../users/users.service");
+const user_entity_1 = require("../users/entities/user.entity");
 let NotificationModule = class NotificationModule {
 };
 exports.NotificationModule = NotificationModule;
 exports.NotificationModule = NotificationModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([notification_entity_1.Notification, campaign_entity_1.Campaign]), campaigns_module_1.CampaignModule],
-        providers: [
-            notification_service_1.NotificationService,
-            notification_resolver_1.NotificationResolver,
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([notification_entity_1.Notifications, notification_token_entity_1.NotificationToken, user_entity_1.User])
         ],
+        providers: [notification_service_1.NotificationService, notification_resolver_1.NotificationsResolver, users_service_1.UsersService,],
+        exports: [notification_service_1.NotificationService, typeorm_1.TypeOrmModule]
     })
 ], NotificationModule);
 //# sourceMappingURL=notification.module.js.map

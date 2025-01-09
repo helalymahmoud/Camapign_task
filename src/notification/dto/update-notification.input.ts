@@ -1,8 +1,16 @@
-import { CreateNotificationInput } from './create-notification.input';
-import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
+import { IsString, IsNotEmpty } from 'class-validator';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { FindOperator } from 'typeorm';
 
 @InputType()
-export class UpdateNotificationInput extends PartialType(CreateNotificationInput) {
-  @Field(() => Int)
-  id: number;
+export class UpdateNotificationDto {
+  @Field()
+  @IsString()
+  @IsNotEmpty()
+  deviceToken: string;
+
+  @Field({ nullable: true })
+  @IsString()
+  reason?: string; 
+  device_type: string | FindOperator<string>;
 }

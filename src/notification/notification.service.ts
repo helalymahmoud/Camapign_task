@@ -1,53 +1,94 @@
 import { Injectable } from '@nestjs/common';
-import * as admin from  'firebase-admin';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Notifications } from './entities/notification.entity';
+import { Repository } from 'typeorm';
+import * as firebase from 'firebase-admin';
+import * as path from 'path';
+import { NotificationToken } from './entities/notification-token.entity';
+import { NotificationDto } from './dto/notification.dto';
+import { UpdateNotificationDto } from './dto/update-notification.input';
+import { ObjectType } from '@nestjs/graphql';
 
-@Injectable()
 
+// console.log(  path.join(__dirname,'..','..','src/config/firebase-admin-sdk.json'),
+// )
+// console.log(path.join(process.cwd(),'src/config/firebase-admin-sdk.json'));
+
+firebase.initializeApp({
+  credential: firebase.credential.cert(
+    path.join(process.cwd(),'src/config/firebase-admin-sdk.json')
+  ),
+  });
+@ObjectType() 
 export class NotificationService {
-  [x: string]: any;
-  constructor() {
-    
-    // admin.initializeApp({
-    //   credential: admin.credential.cert({
-    //     projectId: process.env.FIREBASE_PROJECT_ID,
-    //     privateKey: process.env.FIREBASE_CLIENT_EMAIL,
-    //     clientEmail: process.env.FIREBASE_PRIVATE_KEY,
-    //   }),
-    // });
-  }
+  constructor(
+    @InjectRepository(Notifications) private readonly notificationsRepo: Repository<Notifications>,
+    @InjectRepository(NotificationToken) private readonly notificationTokenRepo: Repository<NotificationToken>,
+  ) {}
 
-  async sendPushNotification(token: string, title: string, body: string): Promise<void> {
+  acceptPushNotification = async (
+    user: any,
+    notification_dto: NotificationDto , 
+  ): Promise<NotificationToken> => {
+    await this.notificationTokenRepo.update(
+      { user: { id: user.id } },
+      {
+        status: 'INACTIVE',
+      },
+    );
+    const notification_token = await this.notificationTokenRepo.save({
+      user: user,
+      device_type: notification_dto.device_type, 
+      notification_token: notification_dto.notification_token,
+      status: 'ACTIVE',
+    });
+    return notification_token;
+  };
+  disablePushNotification = async (
+    user: any,
+    update_dto: UpdateNotificationDto,
+  ): Promise<void> => {
     try {
-      const message = {
-        token: token, 
-        notification: {
-          title: title,
-          body: body,
-
+      await this.notificationTokenRepo.update(
+        { user: { id: user.id }, device_type: update_dto.device_type },
+        {
+          status: 'INACTIVE',
         },
-      };
-      
-   
-      await admin.messaging().send(message); 
+      );
     } catch (error) {
-      console.error('Error sending notification:', error);
+      return error;
+    }
+  };
+
+  getNotifications = async (): Promise<any> => {
+    return await this.notificationsRepo.find();
+  };
+  sendPush = async (user: any, title: string, body: string): Promise<void> => {
+    try {
+      const notification = await this.notificationTokenRepo.findOne({
+        where: { user: { id: user.id }, status: 'ACTIVE' },
+      });
+      if (notification) {
+        await this.notificationsRepo.save({
+          notification_token: notification,
+          title,
+          body,
+          status: 'ACTIVE',
+          created_by: user.username,
+        });
+        await firebase
+          .messaging()
+          .send({
+            notification: { title, body },
+            token: notification.notification_token,
+            android: { priority: 'high' },
+          })
+          .catch((error: any) => {
+            console.error(error);
+          });
+      }
+    } catch (error) {
+      return error;
     }
   }
-
-  
-  @Cron(CronExpression.EVERY_DAY_AT_2AM)
-  async sendDailyNotifications() {
-    const userTokens = await this.getUserTokens(); 
-    userTokens.forEach(async (token) => {
-      await this.sendPushNotification(token, 'Campaign Reminder', 'Your campaign starts tomorrow!');
-    });
-  }
-
-  private async getUserTokens(): Promise<string[]> {
-    return ['user-token-1', 'user-token-2', 'user-token-3'];
-  }
-  
 }
-
-  

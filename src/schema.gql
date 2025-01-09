@@ -42,6 +42,14 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type NotificationToken {
+  id: Float!
+  user: User!
+  device_type: String!
+  notification_token: String!
+  status: String!
+}
+
 type Ticket {
   user: String!
   campaign: String!
@@ -88,7 +96,11 @@ type Mutation {
   updateUser(id: String!, updateUserDto: UpdateUserDto!): User!
   updatePassword(userId: String!, newPassword: String!): Boolean!
   removeUser(id: String!): Boolean!
-  sendNotification(fcmToken: String!, title: String!, body: String!): String!
+  enablePush(id: String!, notificationDto: NotificationDto!): String!
+  disablePush(id: String!, updateNotificationDto: UpdateNotificationDto!): String!
+  sendNotification(token: String!, title: String!, body: String!): String!
+  subscribeToTopic(tokens: [String!]!, topic: String!): String!
+  unsubscribeFromTopic(tokens: [String!]!, topic: String!): String!
 
   """Register a new user"""
   register(data: RegisterDto!): String!
@@ -130,6 +142,17 @@ input CreateAdInput {
 
 input UpdateUserDto {
   l: String!
+}
+
+input NotificationDto {
+  title: String!
+  body: String!
+  deviceToken: String!
+}
+
+input UpdateNotificationDto {
+  deviceToken: String!
+  reason: String
 }
 
 input RegisterDto {

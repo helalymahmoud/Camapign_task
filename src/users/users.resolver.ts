@@ -7,6 +7,8 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { GqlAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { RolesGuard } from 'src/auth/guards/role.guard';
+import { UpdateNotificationDto } from 'src/notification/dto/update-notification.input';
+import { NotificationDto } from 'src/notification/dto/notification.dto';
 
   @Resolver(() => User)
   export class UsersResolver {
@@ -73,12 +75,34 @@ import { RolesGuard } from 'src/auth/guards/role.guard';
   @Mutation(() => Boolean)
   @UseGuards(RolesGuard,GqlAuthGuard)
   @Roles('admin') 
-  async removeUser(
+  async removeUser( 
     @CurrentUser()_CurrentUser:User,
     @Args('id') id: string): Promise<boolean> {
     await this.usersService.remove(id);
     return true;
   }
+
+
+
+  @Mutation(() => String)
+  async enablePush(
+    @Args('id', { type: () => String }) userId: string,
+    @Args('notificationDto') notificationDto: NotificationDto,
+  ): Promise<string> {
+    await this.usersService.enablePush(userId, notificationDto);
+    return 'Push notifications enabled successfully';
+  }
+
+  @Mutation(() => String)
+  async disablePush(
+    @Args('id', { type: () => String }) userId: string,
+    @Args('updateNotificationDto') updateNotificationDto: UpdateNotificationDto,
+  ): Promise<string> {
+    await this.usersService.disablePush(userId, updateNotificationDto);
+    return 'Push notifications disabled successfully';
+  }
+
+
 
   }
   

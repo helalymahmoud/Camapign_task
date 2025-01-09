@@ -22,7 +22,6 @@ const campaign_entity_1 = require("./campaigns/entities/campaign.entity");
 const Partner_entity_1 = require("./Partners/entites/Partner.entity");
 const user_entity_1 = require("./users/entities/user.entity");
 const tickets_entity_1 = require("./tickets/entities/tickets.entity");
-const notification_module_1 = require("./notification/notification.module");
 const auth_module_1 = require("./auth/auth.module");
 const ads_module_1 = require("./ads/ads.module");
 const partner_module_1 = require("./Partners/partner.module");
@@ -36,6 +35,7 @@ const bullmq_1 = require("@nestjs/bullmq");
 const queue_module_1 = require("./queue/queue.module");
 const config_1 = require("@nestjs/config");
 const mailer_1 = require("@nestjs-modules/mailer");
+const notification_module_1 = require("./notification/notification.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;

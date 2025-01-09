@@ -18,15 +18,62 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const user_entity_1 = require("./entities/user.entity");
 const bcrypt = require("bcrypt");
+const notification_service_1 = require("../notification/notification.service");
+const firebase = require("firebase-admin");
 let UsersService = class UsersService {
+    unsubscribeFromTopic(tokens, topic) {
+        throw new Error('Method not implemented.');
+    }
+    subscribeToTopic(tokens, topic) {
+        throw new Error('Method not implemented.');
+    }
     getUser(username) {
         throw new Error('Method not implemented.');
     }
     findById(id) {
         throw new Error('Method not implemented.');
     }
-    constructor(userRepository) {
+    constructor(userRepository, notificationService) {
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
+        this.updateProfile = async (user_id, update_dto) => {
+            try {
+                const user = await this.userRepository.findOne({
+                    where: { id: user_id },
+                });
+                const updated_user = {
+                    ...user,
+                    username: update_dto.username,
+                    email: update_dto.email,
+                };
+                const saved_user = await this.userRepository.save(updated_user);
+                if (saved_user) {
+                    await this.notificationService.sendPush(updated_user, 'Profiie update', 'Your Profile have been updated successfully')
+                        .catch((e) => {
+                        console.log('Error sending push notification', e);
+                    });
+                }
+                return saved_user;
+            }
+            catch (error) {
+                return error;
+            }
+        };
+        this.enablePush = async (user_id, update_dto) => {
+            const user = await this.userRepository.findOne({
+                where: { id: user_id },
+            });
+            return await this.notificationService.acceptPushNotification(user, update_dto);
+        };
+        this.disablePush = async (user_id, update_dto) => {
+            const user = await this.userRepository.findOne({
+                where: { id: user_id },
+            });
+            return await this.notificationService.disablePushNotification(user, update_dto);
+        };
+        this.getPushNotifications = async () => {
+            return await this.notificationService.getNotifications();
+        };
     }
     async createUser(data) {
         const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -57,11 +104,30 @@ let UsersService = class UsersService {
     async remove(id) {
         await this.userRepository.delete(id);
     }
+    create(user) {
+        return this.userRepository.save(user);
+    }
+    async sendNotification(token, message) {
+        try {
+            await firebase.messaging().send({
+                notification: message.notification,
+                token: token,
+                android: {
+                    priority: 'high',
+                },
+            });
+        }
+        catch (error) {
+            console.error('Error sending notification:', error);
+            throw new Error('Unable to send notification');
+        }
+    }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        notification_service_1.NotificationService])
 ], UsersService);
 //# sourceMappingURL=users.service.js.map

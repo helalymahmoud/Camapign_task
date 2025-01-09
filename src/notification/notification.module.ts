@@ -1,22 +1,17 @@
+  import { Module } from '@nestjs/common';
+  import { NotificationService } from './notification.service';
+  import { TypeOrmModule } from '@nestjs/typeorm';
+  import { Notifications } from './entities/notification.entity';
+  import { NotificationToken } from './entities/notification-token.entity';
+  import { NotificationsResolver } from './notification.resolver';
+  import { UsersService } from 'src/users/users.service';
+  import { User } from 'src/users/entities/user.entity';
 
-import { Module } from '@nestjs/common';
-import { NotificationService } from './notification.service';
-import { NotificationScheduler } from './notification.scheduler';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Notification } from 'src/notification/entities/notification.entity';
-import { NotificationResolver } from './notification.resolver';
-import { CampaignModule } from 'src/campaigns/campaigns.module';
-import { Campaign } from 'src/campaigns/entities/campaign.entity';
+  @Module({
+    imports: [
+      TypeOrmModule.forFeature([Notifications, NotificationToken,User])],
+    providers: [NotificationService,NotificationsResolver,UsersService,],
+    exports: [NotificationService,TypeOrmModule]
+  })
 
-
-@Module({
-  imports:[TypeOrmModule.forFeature([Notification,Campaign]),CampaignModule],
-  providers: [
-    NotificationService,
-    // NotificationScheduler,
-    NotificationResolver,
-    
-    
-  ],
-})
-export class NotificationModule {}
+  export class NotificationModule {} 
