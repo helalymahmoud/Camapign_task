@@ -39,7 +39,7 @@ let CampaignResolver = class CampaignResolver {
     async search(input) {
         const campaigns = await this;
         const ads = await this.adService.searchAds(input);
-        return [, ...ads];
+        return ["Campaigns,ads"];
     }
     async Campaigns() {
         const campaigns = await this.campaignService.findAll();

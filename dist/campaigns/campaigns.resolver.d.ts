@@ -16,7 +16,7 @@ export declare class CampaignResolver {
     }): Promise<Ad>;
     searchCampaignsUsingFind(searchKey: string): Promise<Campaign[]>;
     searchCampaignsUsingQueryBuilder(searchKey: string): Promise<Campaign[]>;
-    search(input: SearchInput): Promise<any[]>;
+    search(input: SearchInput): Promise<string[]>;
     Campaigns(): Promise<Campaign[]>;
     Campaign(id: string): Promise<Campaign>;
     createCampaign(createCampaignInput: CreateCampaignInput): Promise<Campaign>;

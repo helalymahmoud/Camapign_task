@@ -17,9 +17,9 @@ const graphql_1 = require("@nestjs/graphql");
 const users_service_1 = require("../users/users.service");
 const notification_service_1 = require("./notification.service");
 let NotificationsResolver = class NotificationsResolver {
-    constructor(usersService, notification) {
+    constructor(usersService, notificationService) {
         this.usersService = usersService;
-        this.notification = notification;
+        this.notificationService = notificationService;
     }
     async sendNotification(token, title, body) {
         const message = {
@@ -27,7 +27,6 @@ let NotificationsResolver = class NotificationsResolver {
                 title,
                 body,
             },
-            token,
         };
         await this.usersService.sendNotification(token, message);
         return 'Notification sent successfully';

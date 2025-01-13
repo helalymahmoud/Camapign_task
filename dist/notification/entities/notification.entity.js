@@ -29,24 +29,20 @@ __decorate([
 ], Notifications.prototype, "notification_token", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    (0, graphql_1.Field)(),
     __metadata("design:type", String)
 ], Notifications.prototype, "title", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'text', nullable: true }),
-    (0, graphql_1.Field)({ nullable: true }),
     __metadata("design:type", String)
 ], Notifications.prototype, "body", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    (0, graphql_1.Field)(),
     __metadata("design:type", String)
 ], Notifications.prototype, "created_by", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         default: 'ACTIVE',
     }),
-    (0, graphql_1.Field)(),
     __metadata("design:type", String)
 ], Notifications.prototype, "status", void 0);
 exports.Notifications = Notifications = __decorate([

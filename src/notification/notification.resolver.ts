@@ -4,27 +4,27 @@ import { NotificationService } from './notification.service';
 
 @Resolver()
 export class NotificationsResolver {
-  constructor(private readonly usersService: UsersService,
-              private readonly notification:NotificationService
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly notificationService:NotificationService
   ) {}
 
-  @Mutation(() => String)
-  async sendNotification(
-    @Args('token') token: string,
-    @Args('title') title: string,
-    @Args('body') body: string,
-  ): Promise<string> {
-    const message = {
-      notification: {
-        title,
-        body,
-      },
-      token,
-    };
+@Mutation(() => String)
+async sendNotification(
+  @Args('token') token: string,
+  @Args('title') title: string,
+  @Args('body') body: string,
+): Promise<string> {
+  const message = {
+    notification: {
+      title,
+      body,
+    },
+  };  
 
-    await this.usersService.sendNotification(token, message);
-    return 'Notification sent successfully';
-  }
+  await this.usersService.sendNotification(token, message);
+  return 'Notification sent successfully';
+}
 
   @Mutation(() => String)
   async subscribeToTopic(
@@ -33,7 +33,8 @@ export class NotificationsResolver {
   ): Promise<string> {
     await this.usersService.subscribeToTopic(tokens, topic);
     return `Subscribed to topic: ${topic}`;
-  }
+  } 
+  
 
   @Mutation(() => String)
   async unsubscribeFromTopic(

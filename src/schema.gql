@@ -44,10 +44,6 @@ scalar DateTime
 
 type NotificationToken {
   id: Float!
-  user: User!
-  device_type: String!
-  notification_token: String!
-  status: String!
 }
 
 type Ticket {

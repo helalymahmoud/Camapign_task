@@ -46,9 +46,8 @@ export class CampaignResolver {
     const campaigns = await this
     const ads = await this.adService.searchAds(input);
 
-    return [,...ads];
+    return ["Campaigns,ads"];
   }
-
   
   @Query(() => [Campaign])            
   async Campaigns():Promise<Campaign[]> { 
@@ -56,7 +55,7 @@ export class CampaignResolver {
     return campaigns || []; 
   }
   
-  @Query(() => Campaign)
+  @Query(() => Campaign)  
   async Campaign(
     @Args('id') id: string): Promise<Campaign> {  
     return this.campaignService.findOne(id); 

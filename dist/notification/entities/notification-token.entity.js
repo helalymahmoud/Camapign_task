@@ -24,24 +24,20 @@ __decorate([
 __decorate([
     (0, typeorm_1.ManyToOne)(() => user_entity_1.User),
     (0, typeorm_1.JoinColumn)({ name: 'user_id', referencedColumnName: 'id' }),
-    (0, graphql_1.Field)(() => user_entity_1.User),
     __metadata("design:type", user_entity_1.User)
 ], NotificationToken.prototype, "user", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    (0, graphql_1.Field)(),
     __metadata("design:type", String)
 ], NotificationToken.prototype, "device_type", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    (0, graphql_1.Field)(),
     __metadata("design:type", String)
 ], NotificationToken.prototype, "notification_token", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         default: 'ACTIVE',
     }),
-    (0, graphql_1.Field)(),
     __metadata("design:type", String)
 ], NotificationToken.prototype, "status", void 0);
 exports.NotificationToken = NotificationToken = __decorate([

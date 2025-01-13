@@ -10,10 +10,6 @@ import { UpdateNotificationDto } from './dto/update-notification.input';
 import { ObjectType } from '@nestjs/graphql';
 
 
-// console.log(  path.join(__dirname,'..','..','src/config/firebase-admin-sdk.json'),
-// )
-// console.log(path.join(process.cwd(),'src/config/firebase-admin-sdk.json'));
-
 firebase.initializeApp({
   credential: firebase.credential.cert(
     path.join(process.cwd(),'src/config/firebase-admin-sdk.json')
@@ -25,6 +21,8 @@ export class NotificationService {
     @InjectRepository(Notifications) private readonly notificationsRepo: Repository<Notifications>,
     @InjectRepository(NotificationToken) private readonly notificationTokenRepo: Repository<NotificationToken>,
   ) {}
+
+
 
   acceptPushNotification = async (
     user: any,
@@ -44,6 +42,10 @@ export class NotificationService {
     });
     return notification_token;
   };
+
+
+
+
   disablePushNotification = async (
     user: any,
     update_dto: UpdateNotificationDto,
@@ -60,9 +62,15 @@ export class NotificationService {
     }
   };
 
+
+
+
   getNotifications = async (): Promise<any> => {
     return await this.notificationsRepo.find();
   };
+
+
+
   sendPush = async (user: any, title: string, body: string): Promise<void> => {
     try {
       const notification = await this.notificationTokenRepo.findOne({
@@ -91,4 +99,7 @@ export class NotificationService {
       return error;
     }
   }
+
+
+ 
 }

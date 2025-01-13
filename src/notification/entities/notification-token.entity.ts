@@ -11,20 +11,17 @@ export class NotificationToken {
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
-  @Field(() => User) 
+
   user: User;
 
   @Column()
-  @Field()
   device_type: string;
 
   @Column()
-  @Field()
   notification_token: string;
 
   @Column({
     default: 'ACTIVE',
   })
-  @Field()
   status: string;
 }

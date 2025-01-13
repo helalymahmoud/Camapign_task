@@ -17,6 +17,6 @@ export class NotificationDto {
   @IsString()
   @IsNotEmpty()
   deviceToken: string;
-  device_type: any;
-  notification_token: any;
+  device_type: string;
+  notification_token: string;
 }

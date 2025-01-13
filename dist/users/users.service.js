@@ -21,44 +21,9 @@ const bcrypt = require("bcrypt");
 const notification_service_1 = require("../notification/notification.service");
 const firebase = require("firebase-admin");
 let UsersService = class UsersService {
-    unsubscribeFromTopic(tokens, topic) {
-        throw new Error('Method not implemented.');
-    }
-    subscribeToTopic(tokens, topic) {
-        throw new Error('Method not implemented.');
-    }
-    getUser(username) {
-        throw new Error('Method not implemented.');
-    }
-    findById(id) {
-        throw new Error('Method not implemented.');
-    }
     constructor(userRepository, notificationService) {
         this.userRepository = userRepository;
         this.notificationService = notificationService;
-        this.updateProfile = async (user_id, update_dto) => {
-            try {
-                const user = await this.userRepository.findOne({
-                    where: { id: user_id },
-                });
-                const updated_user = {
-                    ...user,
-                    username: update_dto.username,
-                    email: update_dto.email,
-                };
-                const saved_user = await this.userRepository.save(updated_user);
-                if (saved_user) {
-                    await this.notificationService.sendPush(updated_user, 'Profiie update', 'Your Profile have been updated successfully')
-                        .catch((e) => {
-                        console.log('Error sending push notification', e);
-                    });
-                }
-                return saved_user;
-            }
-            catch (error) {
-                return error;
-            }
-        };
         this.enablePush = async (user_id, update_dto) => {
             const user = await this.userRepository.findOne({
                 where: { id: user_id },
@@ -104,11 +69,11 @@ let UsersService = class UsersService {
     async remove(id) {
         await this.userRepository.delete(id);
     }
-    create(user) {
-        return this.userRepository.save(user);
-    }
     async sendNotification(token, message) {
         try {
+            if (!token || !message.notification || !message.notification.title || !message.notification.body) {
+                throw new Error('Invalid token or message structure');
+            }
             await firebase.messaging().send({
                 notification: message.notification,
                 token: token,
@@ -116,10 +81,39 @@ let UsersService = class UsersService {
                     priority: 'high',
                 },
             });
+            console.log('Notification sent successfully');
         }
         catch (error) {
-            console.error('Error sending notification:', error);
-            throw new Error('Unable to send notification');
+            console.error('Error sending notification:', error.message);
+            throw new Error(`Unable to send notification: ${error.message}`);
+        }
+    }
+    async subscribeToTopic(tokens, topic) {
+        try {
+            if (!tokens.length || !topic) {
+                throw new Error('Tokens or topic not provided');
+            }
+            const response = await firebase.messaging().subscribeToTopic(tokens, topic);
+            console.log(`Successfully subscribed to topic: ${topic}`);
+            console.log('Firebase response:', response);
+        }
+        catch (error) {
+            console.error('Error subscribing to topic:', error.message);
+            throw new Error(`Unable to subscribe to topic: ${error.message}`);
+        }
+    }
+    async unsubscribeFromTopic(tokens, topic) {
+        try {
+            if (!tokens.length || !topic) {
+                throw new Error('Tokens or topic not provided');
+            }
+            const response = await firebase.messaging().unsubscribeFromTopic(tokens, topic);
+            console.log(`Successfully unsubscribed from topic: ${topic}`);
+            console.log('Firebase response:', response);
+        }
+        catch (error) {
+            console.error('Error unsubscribing from topic:', error.message);
+            throw new Error(`Unable to unsubscribe from topic: ${error.message}`);
         }
     }
 };

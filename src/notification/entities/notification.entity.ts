@@ -15,19 +15,15 @@ export class Notifications {
   notification_token: NotificationToken;
 
   @Column()
-  @Field()
   title: string;
 
   @Column({ type: 'text', nullable: true })
-  @Field({ nullable: true })
   body: string; 
   @Column()
-  @Field()
   created_by: string;
-
+ 
   @Column({
     default: 'ACTIVE',
   })
-  @Field()
   status: string;
 }

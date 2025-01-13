@@ -6,48 +6,31 @@ import * as bcrypt from 'bcrypt';
 import { NotificationService } from 'src/notification/notification.service';
 import { UpdateNotificationDto } from 'src/notification/dto/update-notification.input';
 import { NotificationDto } from 'src/notification/dto/notification.dto';
-import { CreateUserDto } from './dto/create-user.dto';
 import * as firebase from 'firebase-admin';
-
-
-
-
-
+import { Token } from 'graphql';
 
 @Injectable()
 export class UsersService {
-  unsubscribeFromTopic(tokens: string[], topic: string) {
-    throw new Error('Method not implemented.');
-  }
-  subscribeToTopic(tokens: string[], topic: string) {
-    throw new Error('Method not implemented.');
-  }
-
-  getUser(username: any): User | PromiseLike<User> {
-    throw new Error('Method not implemented.');
-  }
-  findById(id: any) {
-    throw new Error('Method not implemented.');
-  }
+ 
   constructor(@InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly notificationService: NotificationService,
   ){}
 
-    async createUser(data: { name: string; email: string; password: string }): Promise<User> {
-      const hashedPassword = await bcrypt.hash(data.password, 10);
+  async createUser(data: { name: string; email: string; password: string }): Promise<User> {
+      const hashedPassword = await bcrypt.hash(data.password, 10); 
       const user = this.userRepository.create({
         ...data,
-        password: hashedPassword,
-      });
+        password: hashedPassword,  
+      });   
       return await this.userRepository.save(user);
     }
 
-    async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string): Promise<User> {
       return await this.userRepository.findOne({ where: { email } });
     }
 
-    async updatePassword(userId: string, newPassword: string): Promise<User> {
+  async updatePassword(userId: string, newPassword: string): Promise<User> {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       await this.userRepository.update(userId, { password: hashedPassword });
       return await this.userRepository.findOne({where:{userId}});
@@ -72,39 +55,7 @@ export class UsersService {
     await this.userRepository.delete(id);
   }
 
-
-  create(user: CreateUserDto): Promise<User> {
-    return this.userRepository.save(user);
-  }
-
-  updateProfile = async (user_id: string, update_dto: any): Promise<any> => {
-    try {
-      const user = await this.userRepository.findOne({
-        where: { id: user_id },
-      });
-      const updated_user = {
-        ...user,
-        username: update_dto.username,
-        email: update_dto.email,
-      }
-      const saved_user = await this.userRepository.save(updated_user);
-      if (saved_user) {
-        // send push notification
-        await this.notificationService.sendPush(
-          updated_user,
-          'Profiie update',
-          'Your Profile have been updated successfully',
-        )
-        .catch((e) => {
-          console.log('Error sending push notification', e);
-        }); 
-      }
-      return saved_user;
-    } catch (error) {
-      return error;
-    }
-  }
-
+  
   enablePush = async (
     user_id: string,
      update_dto: NotificationDto,
@@ -118,6 +69,7 @@ export class UsersService {
      );
    };
 
+
    disablePush = async (
     user_id: string,
     update_dto: UpdateNotificationDto,
@@ -130,14 +82,20 @@ export class UsersService {
       update_dto,
     );
   };
+
+
   getPushNotifications = async (): Promise<any> => {
+    
     return await this.notificationService.getNotifications();
   };
 
 
   async sendNotification(token: string, message: any): Promise<void> {
     try {
-      // إرسال الإشعار باستخدام firebase-admin
+      if (!token || !message.notification || !message.notification.title || !message.notification.body) {
+        throw new Error('Invalid token or message structure');
+      }
+
       await firebase.messaging().send({
         notification: message.notification,
         token: token,
@@ -145,9 +103,47 @@ export class UsersService {
           priority: 'high',
         },
       });
+
+      console.log('Notification sent successfully');
     } catch (error) {
-      console.error('Error sending notification:', error);
-      throw new Error('Unable to send notification');
+      console.error('Error sending notification:', error.message);
+      throw new Error(`Unable to send notification: ${error.message}`);
+    }
+  }
+
+
+  async subscribeToTopic(tokens: string[], topic: string): Promise<void> {
+    try {
+      if (!tokens.length || !topic) {
+        throw new Error('Tokens or topic not provided');
+      }
+
+      const response = await firebase.messaging().subscribeToTopic(tokens, topic);
+
+      console.log(`Successfully subscribed to topic: ${topic}`);
+      console.log('Firebase response:', response);
+    } catch (error) {
+      console.error('Error subscribing to topic:', error.message);
+      throw new Error(`Unable to subscribe to topic: ${error.message}`);
+    }
+  }
+
+  
+  async unsubscribeFromTopic(tokens: string[], topic: string): Promise<void> {
+    try {
+      if (!tokens.length || !topic) {
+        throw new Error('Tokens or topic not provided');
+      }
+
+      const response = await firebase.messaging().unsubscribeFromTopic(tokens, topic);
+
+      console.log(`Successfully unsubscribed from topic: ${topic}`);
+      console.log('Firebase response:', response);
+    } catch (error) {
+      console.error('Error unsubscribing from topic:', error.message);
+      throw new Error(`Unable to unsubscribe from topic: ${error.message}`);
     }
   }
 }
+
+
