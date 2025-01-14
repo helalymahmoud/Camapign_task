@@ -69,9 +69,7 @@ import { NotificationModule } from './notification/notification.module';
       }),
       inject: [DataloaderService],
     }),
-    TypeOrmModule.forRootAsync(typeOrmConfigAsync),
-    CampaignModule,
-    UsersModule,
+    TypeOrmModule.forRootAsync(typeOrmConfigAsync),CampaignModule,UsersModule,
     TypeOrmModule.forFeature([
       Campaign,
       Ad,

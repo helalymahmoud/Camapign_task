@@ -34,8 +34,8 @@ import { NotificationDto } from 'src/notification/dto/notification.dto';
       @CurrentUser() _currentUser: User,
       @Args('id') id: string): Promise<User> {
       return this.usersService.findOne(id);
-      
     }
+
 
   @Mutation(() => User)
   @UseGuards(RolesGuard,GqlAuthGuard)
@@ -79,12 +79,14 @@ import { NotificationDto } from 'src/notification/dto/notification.dto';
     @CurrentUser()_CurrentUser:User,
     @Args('id') id: string): Promise<boolean> {
     await this.usersService.remove(id);
+  
+    
     return true;
   }
 
-
-
   @Mutation(() => String)
+  @UseGuards(RolesGuard,GqlAuthGuard)
+  @Roles('admin') 
   async enablePush(
     @Args('id', { type: () => String }) userId: string,
     @Args('notificationDto') notificationDto: NotificationDto,
@@ -94,6 +96,8 @@ import { NotificationDto } from 'src/notification/dto/notification.dto';
   }
 
   @Mutation(() => String)
+  @UseGuards(RolesGuard,GqlAuthGuard)
+  @Roles('admin') 
   async disablePush(
     @Args('id', { type: () => String }) userId: string,
     @Args('updateNotificationDto') updateNotificationDto: UpdateNotificationDto,
@@ -101,7 +105,6 @@ import { NotificationDto } from 'src/notification/dto/notification.dto';
     await this.usersService.disablePush(userId, updateNotificationDto);
     return 'Push notifications disabled successfully';
   }
-
 
 
   }

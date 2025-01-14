@@ -125,6 +125,8 @@ __decorate([
 ], UsersResolver.prototype, "removeUser", null);
 __decorate([
     (0, graphql_1.Mutation)(() => String),
+    (0, common_1.UseGuards)(role_guard_1.RolesGuard, jwt_auth_guard_1.GqlAuthGuard),
+    (0, roles_decorator_1.Roles)('admin'),
     __param(0, (0, graphql_1.Args)('id', { type: () => String })),
     __param(1, (0, graphql_1.Args)('notificationDto')),
     __metadata("design:type", Function),
@@ -133,6 +135,8 @@ __decorate([
 ], UsersResolver.prototype, "enablePush", null);
 __decorate([
     (0, graphql_1.Mutation)(() => String),
+    (0, common_1.UseGuards)(role_guard_1.RolesGuard, jwt_auth_guard_1.GqlAuthGuard),
+    (0, roles_decorator_1.Roles)('admin'),
     __param(0, (0, graphql_1.Args)('id', { type: () => String })),
     __param(1, (0, graphql_1.Args)('updateNotificationDto')),
     __metadata("design:type", Function),

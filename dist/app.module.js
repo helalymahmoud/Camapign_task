@@ -80,9 +80,7 @@ exports.AppModule = AppModule = __decorate([
                 }),
                 inject: [dataloader_service_1.DataloaderService],
             }),
-            typeorm_1.TypeOrmModule.forRootAsync(typeorm_config_1.typeOrmConfigAsync),
-            campaigns_module_1.CampaignModule,
-            users_module_1.UsersModule,
+            typeorm_1.TypeOrmModule.forRootAsync(typeorm_config_1.typeOrmConfigAsync), campaigns_module_1.CampaignModule, users_module_1.UsersModule,
             typeorm_1.TypeOrmModule.forFeature([
                 campaign_entity_1.Campaign,
                 ads_entity_1.Ad,

@@ -8,6 +8,7 @@ import { UpdateNotificationDto } from 'src/notification/dto/update-notification.
 import { NotificationDto } from 'src/notification/dto/notification.dto';
 import * as firebase from 'firebase-admin';
 import { Token } from 'graphql';
+import { QueueService } from 'src/queue/queue.service';
 
 @Injectable()
 export class UsersService {
@@ -85,7 +86,6 @@ export class UsersService {
 
 
   getPushNotifications = async (): Promise<any> => {
-    
     return await this.notificationService.getNotifications();
   };
 
@@ -127,7 +127,6 @@ export class UsersService {
       throw new Error(`Unable to subscribe to topic: ${error.message}`);
     }
   }
-
   
   async unsubscribeFromTopic(tokens: string[], topic: string): Promise<void> {
     try {
@@ -143,6 +142,7 @@ export class UsersService {
       console.error('Error unsubscribing from topic:', error.message);
       throw new Error(`Unable to unsubscribe from topic: ${error.message}`);
     }
+        
   }
 }
 

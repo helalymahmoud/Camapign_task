@@ -9,6 +9,7 @@ import { SearchInput } from './dto/Search-Input.dto';
 import { SearchResultUnion } from './unions';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { QueueService } from 'src/queue/queue.service';
 
 @Resolver(() => Campaign)
 export class CampaignResolver {
@@ -18,6 +19,8 @@ export class CampaignResolver {
      @InjectQueue('campaignQueue') private readonly campaignQueue: Queue,
   ) {}
    private readonly adService : AdService
+   private readonly queueService:QueueService
+
     
    
   @ResolveField('ads', () => [Ad])

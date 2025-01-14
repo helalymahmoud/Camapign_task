@@ -11,6 +11,7 @@ export declare class CampaignResolver {
     adCampaignService: any;
     constructor(campaignService: CampaignService, campaignQueue: Queue);
     private readonly adService;
+    private readonly queueService;
     getAds(campaign: Campaign, { loaders }: {
         loaders: IDataloaders;
     }): Promise<Ad>;

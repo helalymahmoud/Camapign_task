@@ -7,15 +7,15 @@ import { User } from 'src/users/entities/user.entity';
 @Resolver()
 export class AuthResolver {
   verificationService: any;
-  constructor(private readonly authService: AuthService) {}
-
+  constructor(private readonly authService: AuthService
+    
+  ) {}
 
   @Mutation(() => String, { description: 'Register a new user' })
   async register(@Args('data') registerDto: RegisterDto): Promise<string> {
-  const { message } = await this.authService.register(registerDto);
-  return message ;
-}
-
+    const { message } = await this.authService.register(registerDto);
+    return message;
+  }
 
 
   @Mutation(() => Boolean, { description: 'Verify email with OTP' })
