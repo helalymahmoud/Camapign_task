@@ -1,12 +1,13 @@
 import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { UsersService } from 'src/users/users.service';
 import { NotificationService } from './notification.service';
+import { Token } from 'graphql';
 
 @Resolver()
 export class NotificationsResolver {
   constructor(
     private readonly usersService: UsersService,
-    private readonly notificationService:NotificationService
+    _notificationService:NotificationService
   ) {}
 
 @Mutation(() => String)
@@ -18,11 +19,12 @@ async sendNotification(
   const message = {
     notification: {
       title,
-      body,
+      body, 
+      
     },
-  };  
+  };
 
-  await this.usersService.sendNotification(token, message);
+  await this.usersService.sendNotification(token, message)
   return 'Notification sent successfully';
 }
 
@@ -35,7 +37,7 @@ async sendNotification(
     return `Subscribed to topic: ${topic}`;
   } 
   
-
+  
   @Mutation(() => String)
   async unsubscribeFromTopic(
     @Args('tokens', { type: () => [String] }) tokens: string[],

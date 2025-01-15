@@ -23,7 +23,6 @@ export class NotificationService {
   ) {}
 
 
-
   acceptPushNotification = async (
     user: any,
     notification_dto: NotificationDto , 
@@ -33,7 +32,7 @@ export class NotificationService {
       {
         status: 'INACTIVE',
       },
-    );
+    ); 
     const notification_token = await this.notificationTokenRepo.save({
       user: user,
       device_type: notification_dto.device_type, 
@@ -42,7 +41,7 @@ export class NotificationService {
     });
     return notification_token;
   };
-
+  
 
 
 
@@ -63,14 +62,12 @@ export class NotificationService {
   };
 
 
-
-
   getNotifications = async (): Promise<any> => {
     return await this.notificationsRepo.find();
   };
 
 
-
+  
   sendPush = async (user: any, title: string, body: string): Promise<void> => {
     try {
       const notification = await this.notificationTokenRepo.findOne({

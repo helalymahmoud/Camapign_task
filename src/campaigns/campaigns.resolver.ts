@@ -19,7 +19,7 @@ export class CampaignResolver {
      @InjectQueue('campaignQueue') private readonly campaignQueue: Queue,
   ) {}
    private readonly adService : AdService
-   private readonly queueService:QueueService
+   queueService:QueueService
 
     
    
@@ -37,6 +37,7 @@ export class CampaignResolver {
   async searchCampaignsUsingFind(@Args('searchKey', { type: () => String }) searchKey: string) {
     return await this.campaignService.searchCampaignsUsingFind(searchKey);
   }
+  
 
   @Query(() => [Campaign], { name: 'searchCampaignsUsingQueryBuilder' })
   async searchCampaignsUsingQueryBuilder(@Args('searchKey', { type: () => String }) searchKey: string) {
@@ -57,12 +58,14 @@ export class CampaignResolver {
     const campaigns = await this.campaignService.findAll();
     return campaigns || []; 
   }
-  
+
+
   @Query(() => Campaign)  
   async Campaign(
     @Args('id') id: string): Promise<Campaign> {  
     return this.campaignService.findOne(id); 
  }
+
 
  @Mutation(() => Campaign)
  async createCampaign(
@@ -86,7 +89,6 @@ export class CampaignResolver {
     await this.campaignService.remove(id); 
     return true;  
     }
-
-
+    
 
 }

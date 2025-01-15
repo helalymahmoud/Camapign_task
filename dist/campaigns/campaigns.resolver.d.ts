@@ -5,13 +5,14 @@ import { Ad } from 'src/ads/entities/ads.entity';
 import { IDataloaders } from 'src/dataloader/dataloader.interface';
 import { SearchInput } from './dto/Search-Input.dto';
 import { Queue } from 'bull';
+import { QueueService } from 'src/queue/queue.service';
 export declare class CampaignResolver {
     private readonly campaignService;
     private readonly campaignQueue;
     adCampaignService: any;
     constructor(campaignService: CampaignService, campaignQueue: Queue);
     private readonly adService;
-    private readonly queueService;
+    queueService: QueueService;
     getAds(campaign: Campaign, { loaders }: {
         loaders: IDataloaders;
     }): Promise<Ad>;

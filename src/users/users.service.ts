@@ -12,7 +12,7 @@ import { QueueService } from 'src/queue/queue.service';
 
 @Injectable()
 export class UsersService {
- 
+  
   constructor(@InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly notificationService: NotificationService,
