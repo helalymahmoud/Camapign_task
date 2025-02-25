@@ -2,11 +2,26 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Message {
+  id: String!
+  senderId: String!
+  receiverId: String!
+  content: String!
+  createdAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type User {
   id: String!
   name: String!
   email: String!
   joinedCampaigns: [Campaign!]!
+  sentMessages: [Message!]
+  receivedMessages: [Message!]
 }
 
 type Partner {
@@ -37,13 +52,13 @@ type Campaign {
   users: [User!]!
 }
 
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
 type NotificationToken {
   id: Float!
+}
+
+type RoleDistribution {
+  role: String!
+  count: Int!
 }
 
 type Ticket {
@@ -52,6 +67,75 @@ type Ticket {
   createdAt: DateTime!
   expirationDate: DateTime!
   status: String!
+}
+
+type StripeCustomerType {
+  id: String!
+  email: String!
+  name: String!
+}
+
+type RefundType {
+  id: String
+  amount: Float
+  status: String
+  currency: String
+}
+
+type PaymentIntentType {
+  id: String!
+  amount: Float!
+  currency: String!
+  status: String!
+  client_secret: String
+}
+
+type ProductType {
+  id: String!
+  name: String!
+  description: String
+  price: Float!
+  currency: String!
+  isActive: Boolean
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type CouponType {
+  id: ID!
+  duration: String
+  percent_off: Float
+}
+
+type PromoCodeType {
+  id: ID!
+  code: String!
+  coupon: CouponType!
+  created: Float!
+}
+
+type SalesSummaryType {
+  totalRevenue: Float!
+  totalTransactions: Float!
+}
+
+type TransactionType {
+  id: String!
+  status: String!
+  amount: Int!
+  amount_received: Int!
+  currency: String!
+  created: String!
+  description: String
+  customer: String
+  receipt_url: String
+}
+
+type ReviewType {
+  id: Int!
+  rating: Int!
+  comment: String
+  createdAt: DateTime!
 }
 
 type Query {
@@ -64,10 +148,19 @@ type Query {
   Ad(id: String!): Ad!
   Users: [User!]!
   User(id: String!): User!
+  getUserRole: [RoleDistribution!]!
+  getUserById(id: Float!): User
+  getUsersByIds(ids: [Float!]!): [User!]!
   Partners: [Partner!]!
   Partner(id: String!): Partner!
   Tickets: [Ticket!]!
   Ticket(id: String!): Ticket!
+  products(userId: String!): [ProductType!]!
+  getCoupons: [CouponType!]!
+  getTotalSales(startDate: String!, endDate: String!): SalesSummaryType!
+  getAllTransactions(limit: Int, startingAfter: String): [TransactionType!]!
+  getAllReviews: [ReviewType!]!
+  getUserReviews(userId: String!): [ReviewType!]!
 }
 
 union SearchResultUnion = Campaign | Ad
@@ -82,6 +175,20 @@ input SearchInput {
 }
 
 type Mutation {
+  """Register a new user"""
+  register(data: RegisterDto!): String!
+
+  """Verify email with OTP"""
+  verifyOtp(email: String!, otp: String!): Boolean!
+
+  """Login and return JWT token"""
+  login(data: LoginDto!): String!
+
+  """Send reset password link"""
+  sendResetPasswordLink(email: String!): String!
+
+  """Reset password using token"""
+  resetPassword(token: String!, newPassword: String!): String!
   createCampaign(createCampaignInput: CreateCampaignInput!): Campaign!
   updateCampaign(id: String!, updateCampaignInput: CreateCampaignInput!): Campaign!
   removeCampaign(id: String!): Boolean!
@@ -97,27 +204,35 @@ type Mutation {
   sendNotification(token: String!, title: String!, body: String!): String!
   subscribeToTopic(tokens: [String!]!, topic: String!): String!
   unsubscribeFromTopic(tokens: [String!]!, topic: String!): String!
-
-  """Register a new user"""
-  register(data: RegisterDto!): String!
-
-  """Verify email with OTP"""
-  verifyOtp(email: String!, otp: String!): Boolean!
-
-  """Login and return JWT token"""
-  login(data: LoginDto!): String!
-
-  """Send reset password link"""
-  sendResetPasswordLink(email: String!): String!
-
-  """Reset password using token"""
-  resetPassword(token: String!, newPassword: String!): String!
   createPartner(createPartnerInput: CreatePartnerInput!): Partner!
   updatePartner(id: String!, updatePartnerInput: CreatePartnerInput!): Partner!
   removePartner(id: String!): Boolean!
   createTicket(createTicketInput: CreateTicketInput!): Ticket!
   updateTicket(id: String!, updateTicketInput: CreateTicketInput!): Ticket!
   removeTicket(id: String!): Boolean!
+  createCheckoutSession(priceId: String, customPrice: CustomPriceInput, mode: String! = "payment"): String!
+  createInvoice(customerId: String!, items: [CustomPriceInput!]!): String!
+  createCustomer(email: String!, name: String!): StripeCustomerType!
+  refundPayment(paymentIntentId: String!): RefundType!
+  createPaymentIntent(amount: Float!, currency: String!, customerId: String!): PaymentIntentType!
+  createProduct(input: CreateProductInput!): ProductType!
+  createCoupon(percentOff: Float!, duration: String!, expiresInDays: Float!): CouponType!
+  deleteCoupon(couponId: String!): Boolean!
+  createPromoCode(couponId: String!): PromoCodeType!
+  addReview(userId: String!, reviewData: CreateReviewDto!): ReviewType!
+  deleteReview(id: Int!): Boolean!
+  sendMessage(senderId: String!, receiverId: String!, content: String!): Message!
+}
+
+input RegisterDto {
+  name: String!
+  email: String!
+  password: String!
+}
+
+input LoginDto {
+  email: String!
+  password: String!
 }
 
 input CreateCampaignInput {
@@ -151,17 +266,6 @@ input UpdateNotificationDto {
   reason: String
 }
 
-input RegisterDto {
-  name: String!
-  email: String!
-  password: String!
-}
-
-input LoginDto {
-  email: String!
-  password: String!
-}
-
 input CreatePartnerInput {
   name: String!
   contactInfo: String!
@@ -172,4 +276,27 @@ input CreateTicketInput {
   userId: String!
   campaignId: String!
   expirationDate: String!
+}
+
+input CustomPriceInput {
+  amount: Float!
+  currency: String!
+  name: String!
+}
+
+input CreateProductInput {
+  name: String!
+  description: String
+  price: Float!
+  currency: String! = "usd"
+}
+
+input CreateReviewDto {
+  rating: Int!
+  comment: String
+}
+
+type Subscription {
+  userCreated: User!
+  messageSent(receiverId: String!): Message!
 }

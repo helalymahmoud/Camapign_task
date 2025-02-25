@@ -1,0 +1,1 @@
+{"version":3,"file":"role-distribution.dto.js","sourceRoot":"","sources":["../../../src/users/dto/role-distribution.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,6CAAyD;AAGlD,IAAM,gBAAgB,GAAtB,MAAM,gBAAgB;CAM5B,CAAA;AANY,4CAAgB;AAE3B;IADC,IAAA,eAAK,GAAE;;8CACK;AAGb;IADC,IAAA,eAAK,EAAC,GAAG,EAAE,CAAC,aAAG,CAAC;;+CACH;2BALH,gBAAgB;IAD5B,IAAA,oBAAU,GAAE;GACA,gBAAgB,CAM5B"}

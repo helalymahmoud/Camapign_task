@@ -21,7 +21,6 @@ export class CampaignResolver {
    private readonly adService : AdService
    queueService:QueueService
 
-    
    
   @ResolveField('ads', () => [Ad])
   getAds(
@@ -37,13 +36,12 @@ export class CampaignResolver {
   async searchCampaignsUsingFind(@Args('searchKey', { type: () => String }) searchKey: string) {
     return await this.campaignService.searchCampaignsUsingFind(searchKey);
   }
-  
+   
 
   @Query(() => [Campaign], { name: 'searchCampaignsUsingQueryBuilder' })
   async searchCampaignsUsingQueryBuilder(@Args('searchKey', { type: () => String }) searchKey: string) {
     return await this.campaignService.searchCampaigns(searchKey);
-  }
- 
+  } 
 
   @Query(() => [SearchResultUnion], { name: 'search' })
   async search(@Args('input', { type: () => SearchInput }) input: SearchInput){
@@ -82,6 +80,7 @@ export class CampaignResolver {
    await this.campaignQueue.add('updateCampaign', { id, updateCampaignInput });
    return this.campaignService.update(id, updateCampaignInput);
  }
+ 
 
   @Mutation(() => Boolean)  
   async removeCampaign(
@@ -89,6 +88,5 @@ export class CampaignResolver {
     await this.campaignService.remove(id); 
     return true;  
     }
-    
 
 }

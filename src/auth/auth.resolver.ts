@@ -20,11 +20,11 @@ export class AuthResolver {
 
   @Mutation(() => Boolean, { description: 'Verify email with OTP' })
   async verifyOtp(
-    @Args('email') email: string,
-    @Args('otp') otp: string,
+    @Args('email') email: string, 
+    @Args('otp') otp: string,     
   ): Promise<boolean> {
     return this.authService.verifyOtp(email, otp);
-  }
+  } 
 
 
   

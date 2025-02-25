@@ -13,6 +13,7 @@ exports.User = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const ads_entity_1 = require("../../ads/entities/ads.entity");
 const campaign_entity_1 = require("../../campaigns/entities/campaign.entity");
+const message_entity_1 = require("../../chat/Entity/message.entity");
 const typeorm_1 = require("typeorm");
 let User = class User {
     static findOne(arg0) {
@@ -78,6 +79,16 @@ __decorate([
     }),
     __metadata("design:type", String)
 ], User.prototype, "status", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => [message_entity_1.Message], { nullable: true }),
+    (0, typeorm_1.OneToMany)(() => message_entity_1.Message, (message) => message.sender),
+    __metadata("design:type", Array)
+], User.prototype, "sentMessages", void 0);
+__decorate([
+    (0, graphql_1.Field)(() => [message_entity_1.Message], { nullable: true }),
+    (0, typeorm_1.OneToMany)(() => message_entity_1.Message, (message) => message.receiver),
+    __metadata("design:type", Array)
+], User.prototype, "receivedMessages", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)(),
     (0, graphql_1.ObjectType)()

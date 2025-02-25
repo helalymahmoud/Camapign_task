@@ -14,6 +14,7 @@ import { Partner } from './Partners/entites/Partner.entity';
 import { User } from './users/entities/user.entity';
 import { Ticket } from './tickets/entities/tickets.entity';
 import { AuthModule } from './auth/auth.module';
+import { AuthService } from './auth/auth.service';
 import { AdModule } from './ads/ads.module';
 import { PartnerModule } from './Partners/partner.module';
 import { TicketModule } from './tickets/ticket.module';
@@ -27,6 +28,13 @@ import { QueueModule } from './queue/queue.module';
 import { ConfigModule } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { NotificationModule } from './notification/notification.module';
+import { PaymentModule } from './stripe/payment.module';
+import { ProductModule } from './product/product.module';
+import { CouponModule } from './Coupon/coupon.module';
+import { PromoCodeModule } from './promocode/promo-code.module';
+import { SalesModule } from './sales/sales.module';
+import { ReviewModule } from './Review/review.module';
+import { MessageModule } from './chat/message.module';
 
 @Module({
   imports: [
@@ -35,31 +43,30 @@ import { NotificationModule } from './notification/notification.module';
     }),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      imports: [
-        DataloaderModule,
-        BullModule.forRoot({
-          connection: {
-            host: 'localhost',
-            port: 6379,
-          },
-        }),
-      ],
-      useFactory: (dataloaderService: DataloaderService) => ({
+      imports: [DataloaderModule, AuthModule],
+      useFactory: (dataloaderService: DataloaderService, authService: AuthService) => ({
         autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
         playground: true,
-        context: ({ req, res }) => {
-          const token = req.headers.authorization?.split(' ')[1];
-          let currentUser = null;
+        subscriptions: {
+          'graphql-ws': true, 
+        },
+        context: async ({ req, connection }) => {
+          if (connection) {
+            return connection.context; 
+          }
 
-          if (token) {
+          let currentUser: User = null;
+          if (req?.headers.authorization) {
             try {
-              currentUser = jwt.verify(token, "secretKey"); 
-            } catch (err) {
-              console.error('Invalid token:', err);
+              const token = req.headers.authorization.split(' ')[1];
+              const decodedToken: any = jwt.verify(token, process.env.JWT_SECRET);
+              currentUser = await authService.validateUserById(decodedToken.id);
+            } catch (error) {
+              console.error('Error verifying token:', error);
             }
           }
 
-          return { req, res, currentUser, loaders: dataloaderService.getLoaders() };  
+          return { req, currentUser, loaders: dataloaderService.getLoaders() };
         },
         formatError: (err) => ({
           message: err.message,
@@ -67,17 +74,12 @@ import { NotificationModule } from './notification/notification.module';
           timestamp: new Date().toISOString(),
         }),
       }),
-      inject: [DataloaderService],
+      inject: [DataloaderService, AuthService],
     }),
-    TypeOrmModule.forRootAsync(typeOrmConfigAsync),CampaignModule,UsersModule,
-    TypeOrmModule.forFeature([
-      Campaign,
-      Ad,
-      Partner,
-      User,
-      Ticket,
-      AdInteraction,
-    ]),
+    TypeOrmModule.forRootAsync(typeOrmConfigAsync),
+    CampaignModule,
+    UsersModule,
+    TypeOrmModule.forFeature([Campaign, Ad, Partner, User, Ticket, AdInteraction]),
     NotificationModule,
     AuthModule,
     AdModule,
@@ -86,6 +88,14 @@ import { NotificationModule } from './notification/notification.module';
     DataloaderModule,
     QueueModule,
     MailerModule,
+    PaymentModule,
+    ProductModule,
+    CouponModule,
+    PromoCodeModule,
+    SalesModule,
+    ReviewModule,
+    // AuthModule,
+    MessageModule
   ],
   providers: [
     AppService,

@@ -23,6 +23,7 @@ const Partner_entity_1 = require("./Partners/entites/Partner.entity");
 const user_entity_1 = require("./users/entities/user.entity");
 const tickets_entity_1 = require("./tickets/entities/tickets.entity");
 const auth_module_1 = require("./auth/auth.module");
+const auth_service_1 = require("./auth/auth.service");
 const ads_module_1 = require("./ads/ads.module");
 const partner_module_1 = require("./Partners/partner.module");
 const ticket_module_1 = require("./tickets/ticket.module");
@@ -31,11 +32,17 @@ const dataloader_module_1 = require("./dataloader/dataloader.module");
 const dataloader_service_1 = require("./dataloader/dataloader.service");
 const core_1 = require("@nestjs/core");
 const graphql_exception_filter_1 = require("./Exception/graphql-exception.filter");
-const bullmq_1 = require("@nestjs/bullmq");
 const queue_module_1 = require("./queue/queue.module");
 const config_1 = require("@nestjs/config");
 const mailer_1 = require("@nestjs-modules/mailer");
 const notification_module_1 = require("./notification/notification.module");
+const payment_module_1 = require("./stripe/payment.module");
+const product_module_1 = require("./product/product.module");
+const coupon_module_1 = require("./Coupon/coupon.module");
+const promo_code_module_1 = require("./promocode/promo-code.module");
+const sales_module_1 = require("./sales/sales.module");
+const review_module_1 = require("./Review/review.module");
+const message_module_1 = require("./chat/message.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -47,30 +54,29 @@ exports.AppModule = AppModule = __decorate([
             }),
             graphql_1.GraphQLModule.forRootAsync({
                 driver: apollo_1.ApolloDriver,
-                imports: [
-                    dataloader_module_1.DataloaderModule,
-                    bullmq_1.BullModule.forRoot({
-                        connection: {
-                            host: 'localhost',
-                            port: 6379,
-                        },
-                    }),
-                ],
-                useFactory: (dataloaderService) => ({
+                imports: [dataloader_module_1.DataloaderModule, auth_module_1.AuthModule],
+                useFactory: (dataloaderService, authService) => ({
                     autoSchemaFile: (0, path_1.join)(process.cwd(), 'src/schema.gql'),
                     playground: true,
-                    context: ({ req, res }) => {
-                        const token = req.headers.authorization?.split(' ')[1];
+                    subscriptions: {
+                        'graphql-ws': true,
+                    },
+                    context: async ({ req, connection }) => {
+                        if (connection) {
+                            return connection.context;
+                        }
                         let currentUser = null;
-                        if (token) {
+                        if (req?.headers.authorization) {
                             try {
-                                currentUser = jwt.verify(token, "secretKey");
+                                const token = req.headers.authorization.split(' ')[1];
+                                const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+                                currentUser = await authService.validateUserById(decodedToken.id);
                             }
-                            catch (err) {
-                                console.error('Invalid token:', err);
+                            catch (error) {
+                                console.error('Error verifying token:', error);
                             }
                         }
-                        return { req, res, currentUser, loaders: dataloaderService.getLoaders() };
+                        return { req, currentUser, loaders: dataloaderService.getLoaders() };
                     },
                     formatError: (err) => ({
                         message: err.message,
@@ -78,17 +84,12 @@ exports.AppModule = AppModule = __decorate([
                         timestamp: new Date().toISOString(),
                     }),
                 }),
-                inject: [dataloader_service_1.DataloaderService],
+                inject: [dataloader_service_1.DataloaderService, auth_service_1.AuthService],
             }),
-            typeorm_1.TypeOrmModule.forRootAsync(typeorm_config_1.typeOrmConfigAsync), campaigns_module_1.CampaignModule, users_module_1.UsersModule,
-            typeorm_1.TypeOrmModule.forFeature([
-                campaign_entity_1.Campaign,
-                ads_entity_1.Ad,
-                Partner_entity_1.Partner,
-                user_entity_1.User,
-                tickets_entity_1.Ticket,
-                ads_interaction_entity_1.AdInteraction,
-            ]),
+            typeorm_1.TypeOrmModule.forRootAsync(typeorm_config_1.typeOrmConfigAsync),
+            campaigns_module_1.CampaignModule,
+            users_module_1.UsersModule,
+            typeorm_1.TypeOrmModule.forFeature([campaign_entity_1.Campaign, ads_entity_1.Ad, Partner_entity_1.Partner, user_entity_1.User, tickets_entity_1.Ticket, ads_interaction_entity_1.AdInteraction]),
             notification_module_1.NotificationModule,
             auth_module_1.AuthModule,
             ads_module_1.AdModule,
@@ -97,6 +98,13 @@ exports.AppModule = AppModule = __decorate([
             dataloader_module_1.DataloaderModule,
             queue_module_1.QueueModule,
             mailer_1.MailerModule,
+            payment_module_1.PaymentModule,
+            product_module_1.ProductModule,
+            coupon_module_1.CouponModule,
+            promo_code_module_1.PromoCodeModule,
+            sales_module_1.SalesModule,
+            review_module_1.ReviewModule,
+            message_module_1.MessageModule
         ],
         providers: [
             app_service_1.AppService,

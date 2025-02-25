@@ -10,12 +10,10 @@ import { MailService } from 'src/mailer/mail.service';
 import { randomBytes } from 'crypto';
 @Injectable()
 export class AuthService {
-    authenticate(token: string): any {
-        throw new Error('Method not implemented.');
-    }
   mailService: any;
   userService: any;
  users: any;
+  userRepo: any;
   constructor(
     @InjectRepository(User)
      private readonly userRepository: Repository<User>,       
@@ -23,6 +21,15 @@ export class AuthService {
      private readonly jwtService: JwtService,
 
   ){}
+
+  async validateUserById(userId: string): Promise<User | null> {
+    const user = await this.userRepo.findOne({ where: { id: userId } });
+    if (!user) {
+      return null;   
+    }
+    return user; 
+  }
+
 
 async register(registerDto: RegisterDto): Promise<{ message: string }> {
   const { name, email, password } = registerDto;
@@ -76,7 +83,6 @@ async verifyOtp(email: string, otp: string): Promise<boolean> {
   user.otp = null;
   user.otpExpiresAt = null;
   await this.userRepository.save(user);
-
   return true;
 }
 
@@ -95,9 +101,8 @@ public async login(loginDto: LoginDto): Promise<{ token: string }> {
     throw new BadRequestException('Invalid email or password');
   }
 
-  const payload = { sub: user.id, email: user.email, role: user.role }; 
+  const payload = { id: user.id, email: user.email, role: user.role }; 
   const token = this.jwtService.sign(payload);
-
   return { token };
 }
 
@@ -108,14 +113,14 @@ public async login(loginDto: LoginDto): Promise<{ token: string }> {
     user.resetPasswordToken = randomBytes(32).toString('hex');
     user.resetPasswordExpiresAt = new Date(Date.now() + 15 * 60 * 1000); 
 
-    await this.userRepository.save(user);
+    await this.userRepository.save(user);   
 
-      const resetPasswordLink = `http://localhost:3001/reset-password/${user.resetPasswordToken}`;
+      const resetPasswordLink = `https://www.youtube.com/watch?v=43YkA8otY-I&ab_channel=%D8%B9%D8%B5%D8%A7%D9%85%D8%B5%D8%A7%D8%B5%D8%A7-EssamSaasa${user.resetPasswordToken}`;
       await this.mailerService.sendMail(
-      email,
+      email, 
       'Reset Your Password',
       `Reset your password using this link: ${resetPasswordLink}`,
-      `<p>Reset your password using this link:</p><a href="${resetPasswordLink}">Reset Password</a>`,
+      `<p> ___|___ </p><a href="${resetPasswordLink}">Reset Password</a>`,
     );
 
     return { message: 'Password reset link sent to your email, please check your inbox' };
@@ -123,7 +128,7 @@ public async login(loginDto: LoginDto): Promise<{ token: string }> {
 
 
 
-  public async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+  public async resetPassword(token: string, newPassword : string): Promise<{ message: string }> {
     const user = await this.userRepository.findOne({ where: { resetPasswordToken: token } });
     if (!user || user.resetPasswordExpiresAt < new Date()) {
       throw new BadRequestException('Invalid or expired reset token');

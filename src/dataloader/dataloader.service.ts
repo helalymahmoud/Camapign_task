@@ -6,19 +6,26 @@ import { Ad } from 'src/ads/entities/ads.entity';
 
 @Injectable()
 export class DataloaderService {
-  constructor(private readonly adsLoader: AdService) {}
+  constructor(private readonly adService: AdService) {}
 
   getLoaders(): IDataloaders {
-    const adsLoader = this._createAdsLoader();
     return {
-    adsLoader
+      adsLoader: this._createAdsLoader(),
     };
   }
 
   private _createAdsLoader() {
     return new DataLoader<string, Ad>(
-      async (keys: readonly string[]) =>
-        await this.adsLoader.CampaignAdsByBatch(keys as string[]),
+      async (adIds: readonly string[]) => {
+        console.log('Fetching Ads from DB:', adIds);
+        const ads = await this.adService.CampaignAdsByBatch(adIds as string[]);
+        const adMap = new Map(ads.map((ad) => [ad.id, ad]));
+        return adIds.map((id) => adMap.get(id) || null);
+      },
+      {
+        cache: true, 
+        maxBatchSize: 50, 
+      },
     );
   }
 }

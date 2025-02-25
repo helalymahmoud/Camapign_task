@@ -14,17 +14,24 @@ const common_1 = require("@nestjs/common");
 const DataLoader = require("dataloader");
 const ads_service_1 = require("../ads/ads.service");
 let DataloaderService = class DataloaderService {
-    constructor(adsLoader) {
-        this.adsLoader = adsLoader;
+    constructor(adService) {
+        this.adService = adService;
     }
     getLoaders() {
-        const adsLoader = this._createAdsLoader();
         return {
-            adsLoader
+            adsLoader: this._createAdsLoader(),
         };
     }
     _createAdsLoader() {
-        return new DataLoader(async (keys) => await this.adsLoader.CampaignAdsByBatch(keys));
+        return new DataLoader(async (adIds) => {
+            console.log('Fetching Ads from DB:', adIds);
+            const ads = await this.adService.CampaignAdsByBatch(adIds);
+            const adMap = new Map(ads.map((ad) => [ad.id, ad]));
+            return adIds.map((id) => adMap.get(id) || null);
+        }, {
+            cache: true,
+            maxBatchSize: 50,
+        });
     }
 };
 exports.DataloaderService = DataloaderService;

@@ -12,4 +12,3 @@ import { Ad } from 'src/ads/entities/ads.entity';
     exports:[DataloaderService] 
 })
 export class DataloaderModule {}
-   

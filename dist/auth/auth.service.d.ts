@@ -8,11 +8,12 @@ export declare class AuthService {
     private readonly userRepository;
     private readonly mailerService;
     private readonly jwtService;
-    authenticate(token: string): any;
     mailService: any;
     userService: any;
     users: any;
+    userRepo: any;
     constructor(userRepository: Repository<User>, mailerService: MailService, jwtService: JwtService);
+    validateUserById(userId: string): Promise<User | null>;
     register(registerDto: RegisterDto): Promise<{
         message: string;
     }>;

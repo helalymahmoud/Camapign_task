@@ -1,7 +1,8 @@
 import { ObjectType, Field } from "@nestjs/graphql";
 import { Ad } from "src/ads/entities/ads.entity";
 import { Campaign } from "src/campaigns/entities/campaign.entity";
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from "typeorm";
+import { Message } from "src/chat/Entity/message.entity";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany } from "typeorm";
 
 @Entity()
 @ObjectType()
@@ -58,6 +59,24 @@ export class User {
     default: 'ACTIVE',
   })
   status: string;
+
+
+
+
+
+
+
+  @Field(() => [Message], { nullable: true })
+  @OneToMany(() => Message, (message) => message.sender)
+  sentMessages: Message[];
+
+  @Field(() => [Message], { nullable: true })
+  @OneToMany(() => Message, (message) => message.receiver)
+  receivedMessages: Message[];
+  
+
+
+  
       
 
 }

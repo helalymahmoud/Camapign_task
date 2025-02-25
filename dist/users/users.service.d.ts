@@ -3,15 +3,18 @@ import { User } from './entities/user.entity';
 import { NotificationService } from 'src/notification/notification.service';
 import { UpdateNotificationDto } from 'src/notification/dto/update-notification.input';
 import { NotificationDto } from 'src/notification/dto/notification.dto';
+import { PubSub } from 'graphql-subscriptions';
 export declare class UsersService {
     private readonly userRepository;
     private readonly notificationService;
+    pubSub: any;
     constructor(userRepository: Repository<User>, notificationService: NotificationService);
     createUser(data: {
         name: string;
         email: string;
         password: string;
     }): Promise<User>;
+    getPubSub(): PubSub;
     findByEmail(email: string): Promise<User>;
     updatePassword(userId: string, newPassword: string): Promise<User>;
     findAll(): Promise<User[]>;
@@ -24,4 +27,5 @@ export declare class UsersService {
     sendNotification(token: string, message: any): Promise<void>;
     subscribeToTopic(tokens: string[], topic: string): Promise<void>;
     unsubscribeFromTopic(tokens: string[], topic: string): Promise<void>;
+    getUserRole(): Promise<any[]>;
 }

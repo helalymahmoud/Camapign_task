@@ -34,7 +34,7 @@ export class GraphQLExceptisonFilter implements GqlExceptionFilter {
       log(!!context.res)
       // return null
        return this.localRes
-      }
+      } 
 
     // Default error format for other exceptions
     return this.localRes

@@ -24,9 +24,12 @@ const current_user_decorator_1 = require("../auth/decorators/current-user.decora
 const role_guard_1 = require("../auth/guards/role.guard");
 const update_notification_input_1 = require("../notification/dto/update-notification.input");
 const notification_dto_1 = require("../notification/dto/notification.dto");
+const role_distribution_dto_1 = require("./dto/role-distribution.dto");
+const graphql_subscriptions_1 = require("graphql-subscriptions");
 let UsersResolver = class UsersResolver {
     constructor(usersService) {
         this.usersService = usersService;
+        this.pubSub = new graphql_subscriptions_1.PubSub();
     }
     async Users(_currentUser) {
         const users = await this.usersService.findAll();
@@ -37,7 +40,12 @@ let UsersResolver = class UsersResolver {
         return this.usersService.findOne(id);
     }
     async createUser(_currentUser, name, email, password) {
-        return await this.usersService.createUser({ name, email, password });
+        const newUser = await this.usersService.createUser({ name, email, password });
+        this.pubSub.publish('USER_CREATED', { userCreated: newUser });
+        return newUser;
+    }
+    userCreated() {
+        return this.pubSub.asyncIterableIterator('USER_CREATED');
     }
     async updateUser(_CurrentUser, id, updateUserDto) {
         return this.usersService.update(id, updateUserDto);
@@ -58,11 +66,18 @@ let UsersResolver = class UsersResolver {
         await this.usersService.disablePush(userId, updateNotificationDto);
         return 'Push notifications disabled successfully';
     }
+    async getUserRole() {
+        return await this.usersService.getUserRole();
+    }
+    async getUserById(id, context) {
+        return await context.dataloader.userLoader.load(id);
+    }
+    async getUsersByIds(ids, context) {
+        return await context.dataloader.userLoader.loadMany(ids);
+    }
 };
 exports.UsersResolver = UsersResolver;
 __decorate([
-    (0, common_1.UseGuards)(role_guard_1.RolesGuard, jwt_auth_guard_1.GqlAuthGuard),
-    (0, roles_decorator_1.Roles)('user', 'admin'),
     (0, graphql_1.Query)(() => [user_entity_1.User]),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
@@ -81,8 +96,6 @@ __decorate([
 ], UsersResolver.prototype, "User", null);
 __decorate([
     (0, graphql_1.Mutation)(() => user_entity_1.User),
-    (0, common_1.UseGuards)(role_guard_1.RolesGuard, jwt_auth_guard_1.GqlAuthGuard),
-    (0, roles_decorator_1.Roles)('admin'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, graphql_1.Args)('name')),
     __param(2, (0, graphql_1.Args)('email')),
@@ -91,6 +104,14 @@ __decorate([
     __metadata("design:paramtypes", [user_entity_1.User, String, String, String]),
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "createUser", null);
+__decorate([
+    (0, graphql_1.Subscription)(() => user_entity_1.User, {
+        resolve: (payload) => payload.userCreated,
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], UsersResolver.prototype, "userCreated", null);
 __decorate([
     (0, graphql_1.Mutation)(() => user_entity_1.User),
     (0, common_1.UseGuards)(role_guard_1.RolesGuard, jwt_auth_guard_1.GqlAuthGuard),
@@ -143,6 +164,28 @@ __decorate([
     __metadata("design:paramtypes", [String, update_notification_input_1.UpdateNotificationDto]),
     __metadata("design:returntype", Promise)
 ], UsersResolver.prototype, "disablePush", null);
+__decorate([
+    (0, graphql_1.Query)(() => [role_distribution_dto_1.RoleDistribution]),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UsersResolver.prototype, "getUserRole", null);
+__decorate([
+    (0, graphql_1.Query)(() => user_entity_1.User, { nullable: true }),
+    __param(0, (0, graphql_1.Args)('id')),
+    __param(1, (0, graphql_1.Context)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], UsersResolver.prototype, "getUserById", null);
+__decorate([
+    (0, graphql_1.Query)(() => [user_entity_1.User]),
+    __param(0, (0, graphql_1.Args)({ name: 'ids', type: () => [Number] })),
+    __param(1, (0, graphql_1.Context)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array, Object]),
+    __metadata("design:returntype", Promise)
+], UsersResolver.prototype, "getUsersByIds", null);
 exports.UsersResolver = UsersResolver = __decorate([
     (0, graphql_1.Resolver)(() => user_entity_1.User),
     __metadata("design:paramtypes", [users_service_1.UsersService])

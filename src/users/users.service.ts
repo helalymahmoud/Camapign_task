@@ -9,23 +9,34 @@ import { NotificationDto } from 'src/notification/dto/notification.dto';
 import * as firebase from 'firebase-admin';
 import { Token } from 'graphql';
 import { QueueService } from 'src/queue/queue.service';
+import { PubSub } from 'graphql-subscriptions';
+
 
 @Injectable()
 export class UsersService {
+  pubSub: any;
   
   constructor(@InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly notificationService: NotificationService,
-  ){}
+  ){
+    this.pubSub = new PubSub();
+
+  }
 
   async createUser(data: { name: string; email: string; password: string }): Promise<User> {
-      const hashedPassword = await bcrypt.hash(data.password, 10); 
-      const user = this.userRepository.create({
-        ...data,
-        password: hashedPassword,  
-      });   
-      return await this.userRepository.save(user);
-    }
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+    const user = this.userRepository.create({ ...data, password: hashedPassword });
+    const savedUser = await this.userRepository.save(user);
+
+    this.pubSub.publish('USER_CREATED', { userCreated: savedUser });
+
+    return savedUser;
+  }
+
+  getPubSub(): PubSub {
+    return this.pubSub;
+  }
 
   async findByEmail(email: string): Promise<User> {
       return await this.userRepository.findOne({ where: { email } });
@@ -144,6 +155,18 @@ export class UsersService {
     }
         
   }
+
+  async getUserRole(): Promise<any[]> {
+    return await this.userRepository
+      .createQueryBuilder('user')
+      .select('user.role', 'role')
+      .addSelect('COUNT(user.id)', 'count')
+      .groupBy('user.role')
+      .getRawMany();
+  }
+
+
+  
 }
 
 

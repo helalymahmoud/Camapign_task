@@ -20,6 +20,7 @@ const user_entity_1 = require("./entities/user.entity");
 const bcrypt = require("bcrypt");
 const notification_service_1 = require("../notification/notification.service");
 const firebase = require("firebase-admin");
+const graphql_subscriptions_1 = require("graphql-subscriptions");
 let UsersService = class UsersService {
     constructor(userRepository, notificationService) {
         this.userRepository = userRepository;
@@ -39,14 +40,17 @@ let UsersService = class UsersService {
         this.getPushNotifications = async () => {
             return await this.notificationService.getNotifications();
         };
+        this.pubSub = new graphql_subscriptions_1.PubSub();
     }
     async createUser(data) {
         const hashedPassword = await bcrypt.hash(data.password, 10);
-        const user = this.userRepository.create({
-            ...data,
-            password: hashedPassword,
-        });
-        return await this.userRepository.save(user);
+        const user = this.userRepository.create({ ...data, password: hashedPassword });
+        const savedUser = await this.userRepository.save(user);
+        this.pubSub.publish('USER_CREATED', { userCreated: savedUser });
+        return savedUser;
+    }
+    getPubSub() {
+        return this.pubSub;
     }
     async findByEmail(email) {
         return await this.userRepository.findOne({ where: { email } });
@@ -115,6 +119,14 @@ let UsersService = class UsersService {
             console.error('Error unsubscribing from topic:', error.message);
             throw new Error(`Unable to unsubscribe from topic: ${error.message}`);
         }
+    }
+    async getUserRole() {
+        return await this.userRepository
+            .createQueryBuilder('user')
+            .select('user.role', 'role')
+            .addSelect('COUNT(user.id)', 'count')
+            .groupBy('user.role')
+            .getRawMany();
     }
 };
 exports.UsersService = UsersService;

@@ -22,13 +22,17 @@ const user_entity_1 = require("../users/entities/user.entity");
 const mail_service_1 = require("../mailer/mail.service");
 const crypto_1 = require("crypto");
 let AuthService = class AuthService {
-    authenticate(token) {
-        throw new Error('Method not implemented.');
-    }
     constructor(userRepository, mailerService, jwtService) {
         this.userRepository = userRepository;
         this.mailerService = mailerService;
         this.jwtService = jwtService;
+    }
+    async validateUserById(userId) {
+        const user = await this.userRepo.findOne({ where: { id: userId } });
+        if (!user) {
+            return null;
+        }
+        return user;
     }
     async register(registerDto) {
         const { name, email, password } = registerDto;
@@ -83,7 +87,7 @@ let AuthService = class AuthService {
         if (!isPasswordMatch) {
             throw new common_1.BadRequestException('Invalid email or password');
         }
-        const payload = { sub: user.id, email: user.email, role: user.role };
+        const payload = { id: user.id, email: user.email, role: user.role };
         const token = this.jwtService.sign(payload);
         return { token };
     }
@@ -94,8 +98,8 @@ let AuthService = class AuthService {
         user.resetPasswordToken = (0, crypto_1.randomBytes)(32).toString('hex');
         user.resetPasswordExpiresAt = new Date(Date.now() + 15 * 60 * 1000);
         await this.userRepository.save(user);
-        const resetPasswordLink = `http://localhost:3001/reset-password/${user.resetPasswordToken}`;
-        await this.mailerService.sendMail(email, 'Reset Your Password', `Reset your password using this link: ${resetPasswordLink}`, `<p>Reset your password using this link:</p><a href="${resetPasswordLink}">Reset Password</a>`);
+        const resetPasswordLink = `https://www.youtube.com/watch?v=43YkA8otY-I&ab_channel=%D8%B9%D8%B5%D8%A7%D9%85%D8%B5%D8%A7%D8%B5%D8%A7-EssamSaasa${user.resetPasswordToken}`;
+        await this.mailerService.sendMail(email, 'Reset Your Password', `Reset your password using this link: ${resetPasswordLink}`, `<p> ___|___ </p><a href="${resetPasswordLink}">Reset Password</a>`);
         return { message: 'Password reset link sent to your email, please check your inbox' };
     }
     async resetPassword(token, newPassword) {
